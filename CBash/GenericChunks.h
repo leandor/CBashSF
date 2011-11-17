@@ -29,9 +29,10 @@ class FormIDOp
     protected:
         UINT32 count;
         bool stop;
-        bool result;
 
     public:
+        bool result;
+
         FormIDOp();
         virtual ~FormIDOp();
 
@@ -41,13 +42,13 @@ class FormIDOp
         UINT32 GetCount();
         void ResetCount();
         bool Stop();
-        bool GetResult();
     };
 
 class FormIDResolver : public FormIDOp
     {
     private:
         const UINT8 (&ResolveTable)[256];
+        //UINT8 ModIndex;
 
     public:
         const unsigned char * const FileStart;

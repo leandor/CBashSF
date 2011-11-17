@@ -895,13 +895,13 @@ UINT32 FNVFile::GetNumRecords(const UINT32 &RecordType)
     return 0;
     }
 
-Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options)
+Record * FNVFile::CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreationFlags &options)
     {
-    if(Flags.IsNoLoad)
-        {
-        printer("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
-        return NULL;
-        }
+    //if(Flags.IsNoLoad)
+    //    {
+    //    printer("FNVFile::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
+    //    return NULL;
+    //    }
 
     Record *newRecord = NULL;
 
@@ -2260,11 +2260,11 @@ SINT32 FNVFile::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expa
 
 void FNVFile::VisitAllRecords(RecordOp &op)
     {
-    if(Flags.IsNoLoad)
-        {
-        printer("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
-        return;
-        }
+    //if(Flags.IsNoLoad)
+    //    {
+    //    printer("FNVFile::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
+    //    return;
+    //    }
 
     //This visits every record and subrecord
     {
@@ -2392,11 +2392,11 @@ void FNVFile::VisitAllRecords(RecordOp &op)
 
 void FNVFile::VisitRecords(const UINT32 &RecordType, RecordOp &op)
     {
-    if(Flags.IsNoLoad)
-        {
-        printer("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
-        return;
-        }
+    //if(Flags.IsNoLoad)
+    //    {
+    //    printer("FNVFile::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
+    //    return;
+    //    }
 
     switch(RecordType)
         {

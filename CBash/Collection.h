@@ -79,7 +79,7 @@ class Collection
         Collection(STRING const &ModsPath, UINT32 _CollectionType);
         ~Collection();
 
-        SINT32 AddMod(STRING const &_FileName, ModFlags &flags, bool IsPreloading=false);
+        ModFile * AddMod(STRING const &_FileName, ModFlags &flags, bool IsPreloading=false);
         ModFile * IsModAdded(STRING const &ModName);
         SINT32 SaveMod(ModFile *&curModFile, SaveFlags &flags, STRING const DestinationName);
 
@@ -115,6 +115,26 @@ class RecordReader : public RecordOp
         RecordReader(Record *RecordID);
         RecordReader(ModFile *ModID);
         ~RecordReader();
+
+        bool Accept(Record *&curRecord);
+    };
+
+class RecordInvalidFormIDChecker : public RecordOp
+    {
+    private:
+        class InvalidFormIDChecker : public FormIDOp
+            {
+            public:
+                InvalidFormIDChecker();
+                ~InvalidFormIDChecker();
+
+                bool Accept(UINT32 &curFormID);
+                bool AcceptMGEF(UINT32 &curMgefCode);
+            } checker;
+
+    public:
+        RecordInvalidFormIDChecker();
+        ~RecordInvalidFormIDChecker();
 
         bool Accept(Record *&curRecord);
     };

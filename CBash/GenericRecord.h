@@ -32,9 +32,10 @@ class RecordOp
     protected:
         UINT32 count;
         bool stop;
-        bool result;
 
     public:
+        bool result;
+
         RecordOp();
         virtual ~RecordOp();
 
@@ -43,7 +44,6 @@ class RecordOp
         UINT32 GetCount();
         void ResetCount();
         bool Stop();
-        bool GetResult();
     };
 
 struct RecordHeader
@@ -156,8 +156,8 @@ class Record
             _fIsParentMod           = 0x00000004,
             _fIsWinningDetermined   = 0x00000008,
             _fIsWinning             = 0x00000010,
-            _fIsExtendedWinning     = 0x00000020
-            //_fIsIdenticalToMaster = 0x00000040
+            _fIsExtendedWinning     = 0x00000020,
+            //_fHasInvalidFormIDs     = 0x00000040
             };
         void *Parent;
 
@@ -187,6 +187,8 @@ class Record
         void   IsWinning(bool value);
         bool   IsExtendedWinning() const;
         void   IsExtendedWinning(bool value);
+        //bool   HasInvalidFormIDs() const;
+        //void   HasInvalidFormIDs(bool value);
 
         virtual SINT32 Unload() abstract {};
         virtual UINT32 GetType() abstract {};

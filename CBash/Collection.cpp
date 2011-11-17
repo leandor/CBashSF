@@ -157,7 +157,7 @@ Collection::~Collection()
     //LoadOrder255 is shared with ModFiles, so no deleting
     }
 
-SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPreloading)
+ModFile * Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPreloading)
     {
     _chdir(ModsDir);
     //Mods may not be added after collection is loaded.
@@ -171,11 +171,11 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPrelo
         if(IsPreloading || ModID->Flags.GetFlags() == flags.GetFlags())
             {
             delete []ModName;
-            return IsPreloading ? -1 : 0;
+            return IsPreloading ? NULL : ModID;
             }
         printer("AddMod: Warning - Unable to add mod \"%s\". It already exists in the collection.\n", ModName ? ModName : _FileName);
         delete []ModName;
-        return -1;
+        return NULL;
         }
 
     if(IsLoaded)
@@ -183,7 +183,7 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPrelo
         if(!IsPreloading)
             printer("AddMod: Error - Unable to add mod \"%s\". The collection has already been loaded.\n", ModName ? ModName : _FileName);
         delete []ModName;
-        return -1;
+        return NULL;
         }
 
     STRING FileName = new char[strlen(_FileName) + 1];
@@ -199,7 +199,7 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPrelo
         case eIsFallout3:
             printer("AddMod: Error - Unable to add mod \"%s\". Fallout 3 mod support is unimplemented.\n", ModName);
             delete []ModName;
-            break;
+            return NULL;
         case eIsFalloutNewVegas:
             ModFiles.push_back(new FNVFile(this, FileName, ModName, flags.GetFlags()));
             ModFiles.back()->TES4.whichGame = eIsFalloutNewVegas;
@@ -207,9 +207,9 @@ SINT32 Collection::AddMod(STRING const &_FileName, ModFlags &flags, bool IsPrelo
         default:
             printer("AddMod: Error - Unable to add mod \"%s\". Invalid collection type.\n", ModName);
             delete []ModName;
-            break;
+            return NULL;
         }
-    return 0;
+    return ModFiles.back();
     }
 
 ModFile * Collection::IsModAdded(STRING const &ModName)
@@ -285,9 +285,8 @@ SINT32 Collection::Load()
                     //Any new mods loaded this way inherit their flags
                     ModFlags preloadFlags(curModFile->Flags.GetFlags());
                     preloadFlags.IsNoLoad = !curModFile->Flags.IsLoadMasters;
-                    //preloadFlags.IsInLoadOrder = !preloadFlags.IsNoLoad;
                     for(UINT8 x = 0; x < curModFile->TES4.MAST.size(); ++x)
-                        Preloading = (AddMod(curModFile->TES4.MAST[x], preloadFlags, true) == 0 || Preloading);
+                        Preloading = (AddMod(curModFile->TES4.MAST[x], preloadFlags, true) != NULL || Preloading);
                     }
                 }
         }while(Preloading);
@@ -314,7 +313,7 @@ SINT32 Collection::Load()
                 strLoadOrder255.push_back(curModFile->ModName);
                 //printer(" , OrderID %02X", LoadOrder255.size() - 1);
                 }
-            else if(!curModFile->Flags.IsIgnoreAbsentMasters) //every mod not in the std load order exists as if it and its masters are the only ones loaded
+            else if(!curModFile->Flags.IsIgnoreInactiveMasters) //every mod not in the std load order exists as if it and its masters are the only ones loaded
                 {//No need to sort since the masters should be in order well enough
                 for(UINT8 x = 0; x < curModFile->TES4.MAST.size(); ++x)
                     strTempLoadOrder.push_back(curModFile->TES4.MAST[x]);
@@ -332,7 +331,7 @@ SINT32 Collection::Load()
             curModFile = ModFiles[p];
             RecordReader read_parser(curModFile);
             //Loads GRUP and Record Headers.  Fully loads GMST records.
-            curModFile->FormIDHandler.SetLoadOrder((curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters) ? strLoadOrder255 : strAllLoadOrder[x++]);
+            curModFile->FormIDHandler.SetLoadOrder((curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreInactiveMasters) ? strLoadOrder255 : strAllLoadOrder[x++]);
             //VHDPRINT(curModFile->Flags.IsSkipNewRecords ? 0xFF : curModFile->Flags.IsInLoadOrder ? expandedIndex : (UINT8)curModFile->TES4.MAST.size());
             curModFile->FormIDHandler.CreateFormIDLookup(curModFile->Flags.IsSkipNewRecords ? 0xFF :
                                                          curModFile->Flags.IsInLoadOrder ? expandedIndex++ :
@@ -373,7 +372,7 @@ void Collection::UndeleteRecords(std::vector<std::pair<ModFile *, std::vector<Re
         curModFile = DeletedRecords[ListIndex].first;
         std::vector<Record *> &curRecords = DeletedRecords[ListIndex].second;
         if(!curModFile->Flags.IsLoadMasters || !curModFile->Flags.IsInLoadOrder ||
-            curModFile->Flags.IsExtendedConflicts || curModFile->Flags.IsIgnoreAbsentMasters)
+            curModFile->Flags.IsExtendedConflicts || curModFile->Flags.IsIgnoreInactiveMasters)
             {
             curRecords.clear();
             continue;
@@ -406,7 +405,7 @@ void Collection::UndeleteRecords(std::vector<std::pair<ModFile *, std::vector<Re
                     for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
                         {
                         WinningModFile = range.first->second->GetParentMod();
-                        if((SINT32)WinningModFile->ModID > ModID && (WinningModFile->Flags.IsInLoadOrder || WinningModFile->Flags.IsIgnoreAbsentMasters))
+                        if((SINT32)WinningModFile->ModID > ModID && (WinningModFile->Flags.IsInLoadOrder || WinningModFile->Flags.IsIgnoreInactiveMasters))
                             //If the CollapseTable at a given expanded index is set to something other than the mod's CollapsedIndex,
                             // that means the mod has that other mod as a master.
                             if(CollapseTable[WinningModFile->FormIDHandler.ExpandedIndex] != CollapsedIndex)
@@ -427,7 +426,7 @@ void Collection::UndeleteRecords(std::vector<std::pair<ModFile *, std::vector<Re
                 for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
                     {
                     WinningModFile = range.first->second->GetParentMod();
-                    if((SINT32)WinningModFile->ModID > ModID && (WinningModFile->Flags.IsInLoadOrder || WinningModFile->Flags.IsIgnoreAbsentMasters))
+                    if((SINT32)WinningModFile->ModID > ModID && (WinningModFile->Flags.IsInLoadOrder || WinningModFile->Flags.IsIgnoreInactiveMasters))
                         //If the CollapseTable at a given expanded index is set to something other than the mod's CollapsedIndex,
                         // that means the mod has that other mod as a master.
                         if(CollapseTable[WinningModFile->FormIDHandler.ExpandedIndex] != CollapsedIndex)
@@ -499,7 +498,7 @@ FormID_Iterator Collection::LookupWinningRecord(const FORMID &RecordFormID, ModF
         curRecord = range.first->second;
         curModFile = curRecord->GetParentMod();
         curRecord->IsWinning(false);
-        if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters))
+        if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreInactiveMasters))
             {
             ModID = curModFile->ModID;
             WinningModFile = curModFile;
@@ -516,7 +515,7 @@ FormID_Iterator Collection::LookupWinningRecord(const FORMID &RecordFormID, ModF
             curRecord = range.first->second;
             curModFile = curRecord->GetParentMod();
             curRecord->IsWinning(false);
-            if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters))
+            if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreInactiveMasters))
                 {
                 ModID = curModFile->ModID;
                 WinningModFile = curModFile;
@@ -547,7 +546,7 @@ EditorID_Iterator Collection::LookupWinningRecord(STRING const &RecordEditorID, 
         curRecord = range.first->second;
         curModFile = curRecord->GetParentMod();
         curRecord->IsWinning(false);
-        if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters))
+        if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreInactiveMasters))
             {
             ModID = curModFile->ModID;
             WinningModFile = curModFile;
@@ -564,7 +563,7 @@ EditorID_Iterator Collection::LookupWinningRecord(STRING const &RecordEditorID, 
             curRecord = range.first->second;
             curModFile = curRecord->GetParentMod();
             curRecord->IsWinning(false);
-            if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters))
+            if((SINT32)curModFile->ModID > ModID && (curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreInactiveMasters))
                 {
                 ModID = curModFile->ModID;
                 WinningModFile = curModFile;
@@ -614,7 +613,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, RECORDIDARRAY RecordID
             for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
                 {
                 curModFile = range.first->second->GetParentMod();
-                if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
+                if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreInactiveMasters)
                     sortedConflicts.push_back(range.first->second);
                 }
             if(GetExtendedConflicts)
@@ -622,7 +621,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, RECORDIDARRAY RecordID
                 for(EditorID_Range range = ExtendedEditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
                     {
                     curModFile = range.first->second->GetParentMod();
-                    if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
+                    if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreInactiveMasters)
                         sortedConflicts.push_back(range.first->second);
                     }
                 }
@@ -633,7 +632,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, RECORDIDARRAY RecordID
         for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
             {
             curModFile = range.first->second->GetParentMod();
-            if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
+            if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreInactiveMasters)
                 sortedConflicts.push_back(range.first->second);
             }
         if(GetExtendedConflicts)
@@ -641,7 +640,7 @@ SINT32 Collection::GetRecordConflicts(Record *&curRecord, RECORDIDARRAY RecordID
             for(FormID_Range range = ExtendedFormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
                 {
                 curModFile = range.first->second->GetParentMod();
-                if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreAbsentMasters)
+                if(curModFile->Flags.IsInLoadOrder || curModFile->Flags.IsIgnoreInactiveMasters)
                     sortedConflicts.push_back(range.first->second);
                 }
             }
@@ -680,7 +679,7 @@ SINT32 Collection::GetRecordHistory(Record *&curRecord, RECORDIDARRAY RecordIDs)
             for(EditorID_Range range = EditorID_ModFile_Record.equal_range(RecordEditorID); range.first != range.second; ++range.first)
                 {
                 testModFile = range.first->second->GetParentMod();
-                if(testModFile->Flags.IsInLoadOrder || testModFile->Flags.IsIgnoreAbsentMasters)
+                if(testModFile->Flags.IsInLoadOrder || testModFile->Flags.IsIgnoreInactiveMasters)
                     if(CollapseTable[testModFile->FormIDHandler.ExpandedIndex] != curCollapsedIndex)
                         sortedConflicts.push_back(range.first->second);
                 }
@@ -691,7 +690,7 @@ SINT32 Collection::GetRecordHistory(Record *&curRecord, RECORDIDARRAY RecordIDs)
         for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
             {
             testModFile = range.first->second->GetParentMod();
-            if(testModFile->Flags.IsInLoadOrder || testModFile->Flags.IsIgnoreAbsentMasters)
+            if(testModFile->Flags.IsInLoadOrder || testModFile->Flags.IsIgnoreInactiveMasters)
                 if(CollapseTable[testModFile->FormIDHandler.ExpandedIndex] != curCollapsedIndex)
                     sortedConflicts.push_back(range.first->second);
             }
@@ -728,7 +727,7 @@ Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType
         return NULL;
         }
 
-    CreateRecordOptions options(CreateFlags);
+    CreationFlags options(CreateFlags);
     Record *DummyRecord = NULL;
     Record *ParentRecord = NULL;
 
@@ -801,13 +800,13 @@ Record * Collection::CreateRecord(ModFile *&curModFile, const UINT32 &RecordType
 Record * Collection::CopyRecord(Record *&curRecord, ModFile *&DestModFile, const FORMID &DestParentFormID, FORMID DestRecordFormID, STRING const &DestRecordEditorID, UINT32 CreateFlags)
     {
     ModFile *curModFile = curRecord->GetParentMod();
-    if(!curModFile->Flags.IsInLoadOrder && !curModFile->Flags.IsIgnoreAbsentMasters)
+    if(!curModFile->Flags.IsInLoadOrder && !curModFile->Flags.IsIgnoreInactiveMasters)
         {
         printer("CopyRecord: Error - Unable to copy any records from source mod \"%s\". It is not in the load order and may require absent masters.\n", curModFile->ModName);
         return NULL;
         }
 
-    CreateRecordOptions options(CreateFlags);
+    CreationFlags options(CreateFlags);
     Record *ParentRecord = NULL;
     Record *RecordCopy = NULL;
 
@@ -933,7 +932,7 @@ Record * Collection::CopyRecord(Record *&curRecord, ModFile *&DestModFile, const
             LookupWinningRecord(RecordCopy->formID, WinningModfile, WinningRecord, true);
         }
 
-    if(reader.GetResult()) //If the record was read, go ahead and unload it
+    if(reader.result) //If the record was read, go ahead and unload it
         RecordCopy->Unload();
     return RecordCopy;
     }
@@ -1069,6 +1068,15 @@ SINT32 Collection::SetIDFields(Record *&RecordID, FORMID FormID, STRING const &E
         LookupWinningRecord(OldFormID, WinningModfile, WinningRecord, true);
         LookupWinningRecord(RecordID->formID, WinningModfile, WinningRecord, true);
         }
+
+    UINT8 ModIndex = (UINT8)(RecordID->formID >> 24);
+    if(ModIndex == 0xFF)
+        {
+        //RecordID->HasInvalidFormIDs(true);
+        ModFile *ModID = RecordID->GetParentMod();
+        printer("SetIDFields: Error! Record (%08X) in mod %s uses an invalid FormID!\n", RecordID->formID, ModID->ModName);
+        }
+
     return (bChangingFormID || bChangingEditorID) ? 1 : -1;
     }
 
@@ -1169,7 +1177,7 @@ bool IdenticalToMasterRetriever::Accept(Record *&curRecord)
         for(EditorID_Range range = EditorID_ModFile_Record.equal_range(curRecord->GetEditorIDKey()); range.first != range.second; ++range.first)
             {
             master_mod = range.first->second->GetParentMod();
-            if((SINT32)master_mod->ModID > ModID && (master_mod->Flags.IsInLoadOrder || master_mod->Flags.IsIgnoreAbsentMasters))
+            if((SINT32)master_mod->ModID > ModID && (master_mod->Flags.IsInLoadOrder || master_mod->Flags.IsIgnoreInactiveMasters))
                 //If the CollapseTable at a given expanded index is set to something other than the mod's CollapsedIndex,
                 // that means the mod has that other mod as a master.
                 if(CollapseTable[master_mod->FormIDHandler.ExpandedIndex] != CollapsedIndex)
@@ -1184,7 +1192,7 @@ bool IdenticalToMasterRetriever::Accept(Record *&curRecord)
         for(FormID_Range range = FormID_ModFile_Record.equal_range(curRecord->formID); range.first != range.second; ++range.first)
             {
             master_mod = range.first->second->GetParentMod();
-            if((SINT32)master_mod->ModID > ModID && (master_mod->Flags.IsInLoadOrder || master_mod->Flags.IsIgnoreAbsentMasters))
+            if((SINT32)master_mod->ModID > ModID && (master_mod->Flags.IsInLoadOrder || master_mod->Flags.IsIgnoreInactiveMasters))
                 //If the CollapseTable at a given expanded index is set to something other than the mod's CollapsedIndex,
                 // that means the mod has that other mod as a master.
                 if(CollapseTable[master_mod->FormIDHandler.ExpandedIndex] != CollapsedIndex)
@@ -1247,7 +1255,11 @@ bool RecordReader::Accept(Record *&curRecord)
     if(result)
         {
         if(curRecord->IsValid(expander))
+            {
+            //expander.result = false;
             curRecord->VisitFormIDs(expander);
+            //curRecord->HasInvalidFormIDs(expander.result);
+            }
         else
             {
             SINT32 index = -1;
@@ -1261,15 +1273,76 @@ bool RecordReader::Accept(Record *&curRecord)
                     }
             if(index == -1)
                 {
-                printer("Unable to find the correct expander!\n");
+                UINT8 ModIndex = (UINT8)(curRecord->formID >> 24);
+                ModFile *ModID = curRecord->GetParentMod();
+                UINT8 CollapsedIndex = ModID->FormIDHandler.CollapseTable[ModIndex];
+                STRING LongID = CollapsedIndex >= ModID->TES4.MAST.size() ? ModID->ModName : ModID->TES4.MAST[CollapsedIndex];
+
+                printer("RecordReader: Error - Unable to find the correct expander for record (%s, %06X) in mod %s!\n", LongID, curRecord->formID & 0x00FFFFFF, ModID->ModName);
+                //expander.result = false;
                 curRecord->VisitFormIDs(expander);
+                //curRecord->HasInvalidFormIDs(expander.result);
                 }
             else
+                {
+                //Expanders[index]->result = false;
                 curRecord->VisitFormIDs(*Expanders[index]);
+                //curRecord->HasInvalidFormIDs(Expanders[index]->result);
+                }
             }
         ++count;
         }
     return stop;
+    }
+
+RecordInvalidFormIDChecker::InvalidFormIDChecker::InvalidFormIDChecker():
+    FormIDOp()
+    {
+    //
+    }
+
+RecordInvalidFormIDChecker::InvalidFormIDChecker::~InvalidFormIDChecker()
+    {
+    //
+    }
+
+bool RecordInvalidFormIDChecker::InvalidFormIDChecker::Accept(UINT32 &curFormID)
+    {
+    if((curFormID & 0x00FFFFFF) > END_HARDCODED_IDS)
+        result = result || ((curFormID >> 24) == 0xFF);
+    return stop;
+    }
+
+bool RecordInvalidFormIDChecker::InvalidFormIDChecker::AcceptMGEF(UINT32 &curMgefCode)
+    {
+    result = result || ((curMgefCode & 0x000000FF) == 0xFF);
+    return stop;
+    }
+
+RecordInvalidFormIDChecker::RecordInvalidFormIDChecker():
+    RecordOp()
+    {
+    //
+    }
+
+RecordInvalidFormIDChecker::~RecordInvalidFormIDChecker()
+    {
+    //
+    }
+
+bool RecordInvalidFormIDChecker::Accept(Record *&curRecord)
+    {
+    //Ensure the record is read
+    if(!curRecord->IsLoaded())
+        {
+        RecordReader reader(curRecord);
+        reader.Accept(curRecord);
+        }
+    checker.result = false;
+    checker.Accept(curRecord->formID);
+    curRecord->VisitFormIDs(checker);
+
+    return checker.result;
     }
 
 RecordFormIDSwapper::RecordFormIDSwapper(const UINT32 &_FormIDToMatch, const UINT32 &_FormIDToSwap, FormIDHandlerClass &_FormIDHandler, std::vector<FormIDResolver *> &_Expanders):
@@ -1302,7 +1375,7 @@ bool RecordFormIDSwapper::Accept(Record *&curRecord)
         }
 
     //If the record was read, but not changed, unload it again
-    if(reader.GetResult() && !curRecord->IsChanged())
+    if(reader.result && !curRecord->IsChanged())
         curRecord->Unload();
 
     return stop;
@@ -1356,7 +1429,7 @@ bool RecordFormIDMapper::Accept(Record *&curRecord)
     stop = curRecord->VisitFormIDs(mapper);
 
     //If the record was read, but not changed, unload it again
-    if(reader.GetResult() && !curRecord->IsChanged())
+    if(reader.result && !curRecord->IsChanged())
         curRecord->Unload();
 
     return stop;
@@ -1411,7 +1484,7 @@ bool RecordMasterCollector::Accept(Record *&curRecord)
     curRecord->VisitFormIDs(collector);
 
     //If the record was read, but not changed, unload it again
-    if(reader.GetResult() && !curRecord->IsChanged())
+    if(reader.result && !curRecord->IsChanged())
         curRecord->Unload();
 
     return stop;

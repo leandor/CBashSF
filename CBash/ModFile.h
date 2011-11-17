@@ -61,7 +61,7 @@ class ModFile
         virtual SINT32   LoadTES4() abstract {};
         virtual SINT32   Load(RecordOp &read_parser, RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords) abstract {};
         virtual UINT32   GetNumRecords(const UINT32 &RecordType) abstract {};
-        virtual Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options) abstract {};
+        virtual Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreationFlags &options) abstract {};
         virtual SINT32   DeleteRecord(Record *&curRecord, RecordOp &deindexer) abstract {};
         virtual SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod, RecordOp &indexer) abstract {};
 

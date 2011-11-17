@@ -97,9 +97,8 @@ def d(record, expand=False):
 def TestRegressions():
     Current = ObCollection(CollectionType=2)
     Current.addMod("FalloutNV.esm")#, MinLoad=False)
-    Current.addMod("TestRegressions.esp", CreateNew=True)
+    newMod = Current.addMod("TestRegressions.esp", CreateNew=True)
     Current.load()
-    newMod = Current.LookupModFile("TestRegressions.esp")
 
     ##    assertTES4(Current, newMod)
     ##    assertGMST(Current, newMod)
@@ -12116,9 +12115,8 @@ def assertSLPD(Current, newMod):
 def TestReadWrite():
     Current = ObCollection(CollectionType=2)
     Current.addMod("FalloutNV.esm")#, MinLoad=False)
-    Current.addMod("TestRW.esp", CreateNew=True)
+    newMod = Current.addMod("TestRW.esp", CreateNew=True)
     Current.load()
-    newMod = Current.LookupModFile("TestRW.esp")
 
 ##    for record in Current.LoadOrderMods[0].GMST:
 ##        trgRecOver = record.CopyAsOverride(newMod)

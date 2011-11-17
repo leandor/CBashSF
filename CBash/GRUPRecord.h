@@ -142,7 +142,6 @@ class GRUPRecords
                     //Testing Messages
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
-                    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
 
                     //Read (if FullLoad), no-op otherwise
                     parser.Accept(curRecord);
@@ -349,7 +348,6 @@ class GRUPRecords<Ob::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     //Testing Messages
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
-                    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
 
                     //Read (if FullLoad), no-op otherwise
                     parser.Accept(curRecord);
@@ -683,7 +681,6 @@ class GRUPRecords<Ob::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     //Testing Messages
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
-                    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
 
                     //Read (if FullLoad), no-op otherwise
                     parser.Accept(curRecord);
@@ -1371,7 +1368,7 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 {
                                 read_parser.Accept((Record *&)last_cell_record); //may already be loaded, but just to be sure.
                                 //CELL will be unloaded if needed after a second round of indexing when all records are loaded
-                                last_cell_record->XCLC.Load();
+                                last_cell_record->XCLC.Load(); //in-case no XCLC chunk is specified
                                 GridXY_LAND[last_cell_record->XCLC->posX][last_cell_record->XCLC->posY] = (Ob::LANDRecord *)curRecord;
                                 }
                             break;
@@ -1390,7 +1387,6 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     //Testing Messages
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
-                    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
 
                     //Read (if FullLoad), no-op otherwise
                     parser.Accept(curRecord);
@@ -1421,8 +1417,8 @@ class GRUPRecords<Ob::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         for(UINT32 y = 0; y < last_wrld_record->CELLS.size(); ++y)
                             {
                             last_cell_record = (Ob::CELLRecord *)last_wrld_record->CELLS[y];
-                            //reader.Accept((Record **)&last_cell_record); //already read when loaded
-                            //last_cell_record->XCLC.Load();  //already loaded when CELL loaded
+                            read_parser.Accept((Record *&)last_cell_record);
+                            last_cell_record->XCLC.Load(); //in-case no XCLC chunk is specified
                             posX = last_cell_record->XCLC->posX;
                             posY = last_cell_record->XCLC->posY;
 
@@ -2059,7 +2055,6 @@ class FNVGRUPRecords
                     //Testing Messages
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
-                    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
 
                     //Read (if FullLoad), no-op otherwise
                     parser.Accept(curRecord);
@@ -2280,7 +2275,6 @@ class FNVGRUPRecords<FNV::DIALRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     //Testing Messages
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
-                    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
 
                     //Read (if FullLoad), no-op otherwise
                     parser.Accept(curRecord);
@@ -2706,7 +2700,6 @@ class FNVGRUPRecords<FNV::CELLRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     //Testing Messages
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
-                    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
 
                     //Read (if FullLoad), no-op otherwise
                     parser.Accept(curRecord);
@@ -3518,7 +3511,7 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                                 {
                                 read_parser.Accept((Record *&)last_cell_record); //may already be loaded, but just to be sure.
                                 //CELL will be unloaded if needed after a second round of indexing when all records are loaded
-                                last_cell_record->XCLC.Load();
+                                last_cell_record->XCLC.Load(); //in-case no XCLC chunk is specified
                                 GridXY_LAND[last_cell_record->XCLC->posX][last_cell_record->XCLC->posY] = (FNV::LANDRecord *)curRecord;
                                 }
                             break;
@@ -3595,7 +3588,6 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                     //Testing Messages
                     //if((flags & 0x4000) != 0)
                     //    printer("0x4000 used: %08X!!!!\n", curRecord->formID);
-                    curRecord->IsLoaded(false); //just incase the chosen flags were in use, clear them
 
                     //Read (if FullLoad), no-op otherwise
                     parser.Accept(curRecord);
@@ -3626,8 +3618,8 @@ class FNVGRUPRecords<FNV::WRLDRecord, RecType, AllocUnit, IsKeyedByEditorID>
                         for(UINT32 y = 0; y < last_wrld_record->CELLS.size(); ++y)
                             {
                             last_cell_record = (FNV::CELLRecord *)last_wrld_record->CELLS[y];
-                            //reader.Accept((Record **)&last_cell_record); //already read when loaded
-                            //last_cell_record->XCLC.Load();  //already loaded when CELL loaded
+                            read_parser.Accept((Record *&)last_cell_record);
+                            last_cell_record->XCLC.Load(); //in-case no XCLC chunk is specified
                             posX = last_cell_record->XCLC->posX;
                             posY = last_cell_record->XCLC->posY;
 

@@ -42,7 +42,7 @@ DLLEXTERN UINT32 GetVersionRevision();
 ////////////////////////////////////////////////////////////////////////
 //Logging action functions
 DLLEXTERN void RedirectMessages(SINT32 (*_LoggingCallback)(const STRING));
-DLLEXTERN void AllowRaising(void (*_RaiseCallback)());
+DLLEXTERN void AllowRaising(void (*_RaiseCallback)(const STRING));
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Collection action functions
@@ -56,7 +56,7 @@ DLLEXTERN SINT32 DeleteAllCollections();
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Mod action functions
-DLLEXTERN SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField);
+DLLEXTERN ModFile * AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField);
 DLLEXTERN SINT32 LoadMod(ModFile *ModID);
 DLLEXTERN SINT32 UnloadMod(ModFile *ModID);
 DLLEXTERN SINT32 CleanModMasters(ModFile *ModID);
@@ -109,6 +109,7 @@ DLLEXTERN SINT32 GetRecordConflicts(Record *RecordID, RECORDIDARRAY RecordIDs, c
 DLLEXTERN SINT32 GetRecordHistory(Record *RecordID, RECORDIDARRAY RecordIDs);
 DLLEXTERN SINT32 GetNumIdenticalToMasterRecords(ModFile *ModID);
 DLLEXTERN SINT32 GetIdenticalToMasterRecords(ModFile *ModID, RECORDIDARRAY RecordIDs);
+DLLEXTERN SINT32 IsRecordsFormIDsInvalid(Record *RecordID);
 ////////////////////////////////////////////////////////////////////////
 //Mod or Record action functions
 DLLEXTERN SINT32 UpdateReferences(ModFile *ModID, Record *RecordID, FORMIDARRAY OldFormIDs, FORMIDARRAY NewFormIDs, UINT32ARRAY Changes, const UINT32 ArraySize);

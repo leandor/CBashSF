@@ -57,11 +57,6 @@ bool RecordOp::Stop()
     return stop;
     }
 
-bool RecordOp::GetResult()
-    {
-    return result;
-    }
-
 RecordProcessor::RecordProcessor(ModFile *_curModFile, FormIDHandlerClass &_FormIDHandler, const ModFlags &_Flags, boost::unordered_set<UINT32> &_UsedFormIDs):
     curModFile(_curModFile),
     NewTypes(_FormIDHandler.NewTypes),
@@ -172,6 +167,16 @@ void Record::IsExtendedWinning(bool value)
     IsWinningDetermined(true);
     CBash_Flags = value ? (CBash_Flags | _fIsExtendedWinning) : (CBash_Flags & ~_fIsExtendedWinning);
     }
+
+//bool Record::HasInvalidFormIDs() const
+//    {
+//    return (CBash_Flags & _fHasInvalidFormIDs) != 0;
+//    }
+//
+//void Record::HasInvalidFormIDs(bool value)
+//    {
+//    CBash_Flags = value ? (CBash_Flags | _fHasInvalidFormIDs) : (CBash_Flags & ~_fHasInvalidFormIDs);
+//    }
 
 UINT32 Record::GetFieldAttribute(FIELD_IDENTIFIERS, UINT32 WhichAttribute)
     {

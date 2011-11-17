@@ -79,24 +79,23 @@ def d(record, expand=False):
     printRecord(record)
 
 def regressionTests():
-    Current = ObCollection()
-    Current.addMod("Oblivion.esm")
-    Current.addMod("RegressionTests.esp")
-    Current.load()
-    newMod = Current.LookupModFile("RegressionTests.esp")
+    with ObCollection() as Current:
+        Current.addMod("Oblivion.esm")
+        newMod = Current.addMod("RegressionTests.esp")
+        Current.load()
+        print Current.Debug_DumpModFiles()
 
-    assertTES4(Current, newMod)
-    assertGMST(Current, newMod)
-    assertGLOB(Current, newMod)
-    assertCLAS(Current, newMod)
-    assertFACT(Current, newMod)
-    assertHAIR(Current, newMod)
-    assertEYES(Current, newMod)
-    assertRACE(Current, newMod)
+        assertTES4(Current, newMod)
+        assertGMST(Current, newMod)
+        assertGLOB(Current, newMod)
+        assertCLAS(Current, newMod)
+        assertFACT(Current, newMod)
+        assertHAIR(Current, newMod)
+        assertEYES(Current, newMod)
+        assertRACE(Current, newMod)
 
 ##    assertSOUN(Current, newMod)
 ##    assertSKIL(Current, newMod)
-    Current.Close()
 
 def assertTES4(Current, newMod):
     record = Current.LoadOrderMods[0].TES4
@@ -1859,11 +1858,10 @@ def assertSKIL(Current, newMod):
 
 def TestAttrReport():
     Current = ObCollection()
-    Current.addMod("Oblivion.esm")
-##    Current.addMod("Oscuro's_Oblivion_Overhaul.esm")
-##    Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
+    newMod = Current.addMod("Oblivion.esm")
+##    newMod = Current.addMod("Oscuro's_Oblivion_Overhaul.esm")
+##    newMod = Current.addMod("Oscuro's_Oblivion_Overhaul.esp")
     Current.load()
-    newMod = Current.LookupModFile("Oblivion.esm")
     healths = []
     enchantPointss = []
     weights = []
@@ -2037,9 +2035,8 @@ def TestAttrReport():
 
 def TestCopyAttrs():
     Current = ObCollection()
-    Current.addMod("Oblivion.esm")
+    srcFile = Current.addMod("Oblivion.esm")
     Current.load()
-    srcFile = Current.LookupModFile("Oblivion.esm")
     origFids = []
     newFids = []
     for armor in srcFile.ARMO:
@@ -2056,9 +2053,8 @@ def TestCopyAttrs():
 def TestCleanMasters():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("Speedy Disrobe OBSE.esp")
+    newMod = Current.addMod("Speedy Disrobe OBSE.esp")
     Current.load()
-    newMod = Current.LookupModFile("Speedy Disrobe OBSE.esp")
     print newMod.CleanMasters()
     newMod.save()
     Current.Close()
@@ -2072,9 +2068,8 @@ def TestLoadMasters():
 def TestDeleteRecord():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestDelete.esp")
+    newMod = Current.addMod("TestDelete.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestDelete.esp")
     print "Delete Test"
     for record in Current.LoadOrderMods[0].GMST:
         newRecord = record.CopyAsOverride(newMod)
@@ -2314,29 +2309,26 @@ def TestDeleteRecord():
 
 def TestMinimalLoad():
     Current = ObCollection()
-    Current.addMod("Oblivion.esm", MinLoad=True)
+    newMod = Current.addMod("Oblivion.esm", MinLoad=True)
     Current.load()
-##    newMod = Current.LookupModFile("Oblivion.esm")
 ##    newMod.save()
     Current.Close()
 
 def TestFullLoad():
     Current = ObCollection()
-    Current.addMod("Oblivion.esm", MinLoad=False)
+    newMod = Current.addMod("Oblivion.esm", MinLoad=False)
     Current.load()
-##    newMod = Current.LookupModFile("Oblivion.esm")
 ##    newMod.save()
     Current.Close()
 
 def TestReadWriteAll():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestALL.esp", CreateNew=True)
+    newMod = Current.addMod("TestALL.esp", CreateNew=True)
     ##Preloading seems to have almost no effect (~2ms on all simple, CopyAsNew) on speed when later reading...
     ##Not preloading would make it faster if not all records being iterated, and save memory...
 
     Current.load()
-    newMod = Current.LookupModFile("TestAll.esp")
 
     for record in Current.LoadOrderMods[0].GMST:
         record.CopyAsOverride(newMod)
@@ -2656,9 +2648,8 @@ def TestTES4():
     Current = ObCollection()
 ##    CBash.SetLogging(Current._CollectionIndex, Logging2Callback, 0, 0)
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestTES4.esp")
+    newMod = Current.addMod("TestTES4.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestTES4.esp")
     print "TES4:Read Test"
     for modFile in Current.LoadOrderMods:
         record = modFile.TES4
@@ -2696,9 +2687,8 @@ def TestTES4():
 def TestGMST():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestGMST.esp")
+    newMod = Current.addMod("TestGMST.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestGMST.esp")
     print "GMST:Read Test"
     for record in Current.LoadOrderMods[0].GMST:
         print
@@ -2737,9 +2727,8 @@ def TestGMST():
 def TestGLOB():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestGLOB.esp")
+    newMod = Current.addMod("TestGLOB.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestGLOB.esp")
     print "GLOB:Read Test"
     for record in Current.LoadOrderMods[0].GLOB:
         print
@@ -2783,9 +2772,8 @@ def TestGLOB():
 def TestCLAS():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestCLAS.esp")
+    newMod = Current.addMod("TestCLAS.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestCLAS.esp")
     print "CLAS:Read Test"
     for record in Current.LoadOrderMods[0].CLAS:
         print
@@ -2881,9 +2869,8 @@ def TestCLAS():
 def TestFACT():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestFACT.esp")
+    newMod = Current.addMod("TestFACT.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestFACT.esp")
 
     for record in Current.LoadOrderMods[0].FACT:
         print
@@ -2967,9 +2954,8 @@ def TestFACT():
 def TestHAIR():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestHAIR.esp")
+    newMod = Current.addMod("TestHAIR.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestHAIR.esp")
 
     for record in Current.LoadOrderMods[0].HAIR:
         print
@@ -3037,9 +3023,8 @@ def TestHAIR():
 def TestEYES():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestEYES.esp")
+    newMod = Current.addMod("TestEYES.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestEYES.esp")
 
     for record in Current.LoadOrderMods[0].EYES:
         print
@@ -3093,9 +3078,8 @@ def TestEYES():
 def TestRACE():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestRACE.esp")
+    newMod = Current.addMod("TestRACE.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestRACE.esp")
     for record in Current.LoadOrderMods[0].RACE:
         print
         print "fid     :", record.fid
@@ -3415,9 +3399,8 @@ def TestRACE():
 def TestSOUN():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestSOUN.esp")
+    newMod = Current.addMod("TestSOUN.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestSOUN.esp")
 
     for record in Current.LoadOrderMods[0].SOUN:
         print
@@ -3482,9 +3465,8 @@ def TestSOUN():
 def TestSKIL():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestSKIL.esp")
+    newMod = Current.addMod("TestSKIL.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestSKIL.esp")
 
     for record in Current.LoadOrderMods[0].SKIL:
         print
@@ -3553,9 +3535,8 @@ def TestSKIL():
 def TestMGEF():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestMGEF.esp")
+    newMod = Current.addMod("TestMGEF.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestMGEF.esp")
 
     for record in Current.LoadOrderMods[0].MGEF:
         print
@@ -3617,9 +3598,8 @@ def TestMGEF():
 def TestSCPT():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestSCPT.esp")
+    newMod = Current.addMod("TestSCPT.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestSCPT.esp")
     x = 0
     for record in Current.LoadOrderMods[0].SCPT:
         print
@@ -3715,9 +3695,8 @@ def TestSCPT():
 def TestLTEX():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestLTEX.esp")
+    newMod = Current.addMod("TestLTEX.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestLTEX.esp")
 
     for record in Current.LoadOrderMods[0].LTEX:
         print
@@ -3777,9 +3756,8 @@ def TestLTEX():
 def TestENCH():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestENCH.esp")
+    newMod = Current.addMod("TestENCH.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestENCH.esp")
 
     for record in Current.LoadOrderMods[0].ENCH:
         print
@@ -3880,9 +3858,8 @@ def TestENCH():
 def TestSPEL():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestSPEL.esp")
+    newMod = Current.addMod("TestSPEL.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestSPEL.esp")
 
     for record in Current.LoadOrderMods[0].SPEL:
         print
@@ -3982,9 +3959,8 @@ def TestSPEL():
 def TestBSGN():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestBSGN.esp")
+    newMod = Current.addMod("TestBSGN.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestBSGN.esp")
 
     for record in Current.LoadOrderMods[0].BSGN:
         print
@@ -4037,9 +4013,8 @@ def TestBSGN():
 def TestACTI():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestACTI.esp")
+    newMod = Current.addMod("TestACTI.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestACTI.esp")
 
     for record in Current.LoadOrderMods[0].ACTI:
         print
@@ -4100,9 +4075,8 @@ def TestACTI():
 def TestAPPA():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestAPPA.esp")
+    newMod = Current.addMod("TestAPPA.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestAPPA.esp")
 
     for record in Current.LoadOrderMods[0].APPA:
         print
@@ -4172,9 +4146,8 @@ def TestAPPA():
 def TestARMO():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestARMO.esp")
+    newMod = Current.addMod("TestARMO.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestARMO.esp")
 
     for record in Current.LoadOrderMods[0].ARMO:
         print
@@ -4264,9 +4237,8 @@ def TestARMO():
 def TestBOOK():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestBOOK.esp")
+    newMod = Current.addMod("TestBOOK.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestBOOK.esp")
 
     for record in Current.LoadOrderMods[0].BOOK:
         print
@@ -4344,9 +4316,8 @@ def TestBOOK():
 def TestCLOT():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestCLOT.esp")
+    newMod = Current.addMod("TestCLOT.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestCLOT.esp")
 
     for record in Current.LoadOrderMods[0].CLOT:
         print
@@ -4430,9 +4401,8 @@ def TestCLOT():
 def TestCONT():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestCONT.esp")
+    newMod = Current.addMod("TestCONT.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestCONT.esp")
 
     for record in Current.LoadOrderMods[0].CONT:
         print
@@ -4524,9 +4494,8 @@ def TestCONT():
 def TestDOOR():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestDOOR.esp")
+    newMod = Current.addMod("TestDOOR.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestDOOR.esp")
 
     for record in Current.LoadOrderMods[0].DOOR:
         print
@@ -4600,9 +4569,8 @@ def TestDOOR():
 def TestINGR():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestINGR.esp")
+    newMod = Current.addMod("TestINGR.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestINGR.esp")
 
     for record in Current.LoadOrderMods[0].INGR:
         print
@@ -4723,9 +4691,8 @@ def TestINGR():
 def TestLIGH():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestLIGH.esp")
+    newMod = Current.addMod("TestLIGH.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestLIGH.esp")
 
     for record in Current.LoadOrderMods[0].LIGH:
         print
@@ -4820,9 +4787,8 @@ def TestLIGH():
 def TestMISC():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestMISC.esp")
+    newMod = Current.addMod("TestMISC.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestMISC.esp")
 
     for record in Current.LoadOrderMods[0].MISC:
         print
@@ -4889,9 +4855,8 @@ def TestMISC():
 def TestSTAT():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestSTAT.esp")
+    newMod = Current.addMod("TestSTAT.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestSTAT.esp")
 
     for record in Current.LoadOrderMods[0].STAT:
         print
@@ -4945,9 +4910,8 @@ def TestSTAT():
 def TestGRAS():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestGRAS.esp")
+    newMod = Current.addMod("TestGRAS.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestGRAS.esp")
 
     for record in Current.LoadOrderMods[0].GRAS:
         print
@@ -5025,9 +4989,8 @@ def TestGRAS():
 def TestTREE():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestTREE.esp")
+    newMod = Current.addMod("TestTREE.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestTREE.esp")
 
     for record in Current.LoadOrderMods[0].TREE:
         print
@@ -5102,9 +5065,8 @@ def TestTREE():
 def TestFLOR():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestFLOR.esp")
+    newMod = Current.addMod("TestFLOR.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestFLOR.esp")
 
     for record in Current.LoadOrderMods[0].FLOR:
         print
@@ -5168,9 +5130,8 @@ def TestFLOR():
 def TestFURN():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestFURN.esp")
+    newMod = Current.addMod("TestFURN.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestFURN.esp")
 
     for record in Current.LoadOrderMods[0].FURN:
         print
@@ -5233,9 +5194,8 @@ def TestFURN():
 def TestWEAP():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestWEAP.esp")
+    newMod = Current.addMod("TestWEAP.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestWEAP.esp")
 
     for record in Current.LoadOrderMods[0].WEAP:
         print
@@ -5319,9 +5279,8 @@ def TestWEAP():
 def TestAMMO():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestAMMO.esp")
+    newMod = Current.addMod("TestAMMO.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestAMMO.esp")
 
     for record in Current.LoadOrderMods[0].AMMO:
         print
@@ -5399,9 +5358,8 @@ def TestAMMO():
 def TestNPC_():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestNPC_.esp")
+    newMod = Current.addMod("TestNPC_.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestNPC_.esp")
 
     for record in Current.LoadOrderMods[0].NPC_:
         print
@@ -5646,9 +5604,8 @@ def TestNPC_():
 def TestCREA():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestCREA.esp")
+    newMod = Current.addMod("TestCREA.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestCREA.esp")
 
     for record in Current.LoadOrderMods[0].CREA:
         print
@@ -5890,9 +5847,8 @@ def TestCREA():
 def TestLVLC():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestLVLC.esp")
+    newMod = Current.addMod("TestLVLC.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestLVLC.esp")
 
     for record in Current.LoadOrderMods[0].LVLC:
         print
@@ -5980,9 +5936,8 @@ def TestLVLC():
 def TestSLGM():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestSLGM.esp")
+    newMod = Current.addMod("TestSLGM.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestSLGM.esp")
 
     for record in Current.LoadOrderMods[0].SLGM:
         print
@@ -6056,9 +6011,8 @@ def TestSLGM():
 def TestKEYM():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestKEYM.esp")
+    newMod = Current.addMod("TestKEYM.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestKEYM.esp")
 
     for record in Current.LoadOrderMods[0].KEYM:
         print
@@ -6125,9 +6079,8 @@ def TestKEYM():
 def TestALCH():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestALCH.esp")
+    newMod = Current.addMod("TestALCH.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestALCH.esp")
 
     for record in Current.LoadOrderMods[0].ALCH:
         print
@@ -6248,9 +6201,8 @@ def TestALCH():
 def TestSBSP():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestSBSP.esp")
+    newMod = Current.addMod("TestSBSP.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestSBSP.esp")
 
     for record in Current.LoadOrderMods[0].SBSP:
         print
@@ -6300,9 +6252,8 @@ def TestSBSP():
 def TestSGST():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestSGST.esp")
+    newMod = Current.addMod("TestSGST.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestSGST.esp")
 
     for record in Current.LoadOrderMods[0].SGST:
         print
@@ -6439,9 +6390,8 @@ def TestSGST():
 def TestLVLI():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestLVLI.esp")
+    newMod = Current.addMod("TestLVLI.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestLVLI.esp")
 
     for record in Current.LoadOrderMods[0].LVLI:
         print
@@ -6523,9 +6473,8 @@ def TestLVLI():
 def TestWTHR():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestWTHR.esp")
+    newMod = Current.addMod("TestWTHR.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestWTHR.esp")
 
     for record in Current.LoadOrderMods[0].WTHR:
         print
@@ -7006,9 +6955,8 @@ def TestWTHR():
 def TestCLMT():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestCLMT.esp")
+    newMod = Current.addMod("TestCLMT.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestCLMT.esp")
 
     for record in Current.LoadOrderMods[0].CLMT:
         print
@@ -7097,9 +7045,8 @@ def TestCLMT():
 def TestREGN():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestREGN.esp")
+    newMod = Current.addMod("TestREGN.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestREGN.esp")
 
     for record in Current.LoadOrderMods[0].REGN:
         print
@@ -7427,9 +7374,8 @@ def TestREGN():
 def TestCELL():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestCELL.esp")
+    newMod = Current.addMod("TestCELL.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestCELL.esp")
 
     for record in Current.LoadOrderMods[0].CELL:
         print "fid     :", record.fid
@@ -7922,9 +7868,8 @@ def TestCELL():
 def TestWRLD():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestWRLD.esp")
+    newMod = Current.addMod("TestWRLD.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestWRLD.esp")
 
     for record in Current.LoadOrderMods[0].WRLD:
         print
@@ -8376,9 +8321,8 @@ def TestWRLD():
 def TestDIAL():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestDIAL.esp")
+    newMod = Current.addMod("TestDIAL.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestDIAL.esp")
 
     for record in Current.LoadOrderMods[0].DIAL:
         print
@@ -8778,9 +8722,8 @@ def TestDIAL():
 def TestQUST():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestQUST.esp")
+    newMod = Current.addMod("TestQUST.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestQUST.esp")
 
     for record in Current.LoadOrderMods[0].QUST:
         print
@@ -9554,9 +9497,8 @@ def TestQUST():
 def TestIDLE():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestIDLE.esp")
+    newMod = Current.addMod("TestIDLE.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestIDLE.esp")
 
     for record in Current.LoadOrderMods[0].IDLE:
         print
@@ -9667,9 +9609,8 @@ def TestIDLE():
 def TestPACK():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestPACK.esp")
+    newMod = Current.addMod("TestPACK.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestPACK.esp")
 
     for record in Current.LoadOrderMods[0].PACK:
         print
@@ -9800,9 +9741,8 @@ def TestPACK():
 def TestCSTY():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestCSTY.esp")
+    newMod = Current.addMod("TestCSTY.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestCSTY.esp")
 
     for record in Current.LoadOrderMods[0].CSTY:
         print
@@ -9975,9 +9915,8 @@ def TestCSTY():
 def TestLSCR():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestLSCR.esp")
+    newMod = Current.addMod("TestLSCR.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestLSCR.esp")
 
     for record in Current.LoadOrderMods[0].LSCR:
         print
@@ -10058,9 +9997,8 @@ def TestLSCR():
 def TestLVSP():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestLVSP.esp")
+    newMod = Current.addMod("TestLVSP.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestLVSP.esp")
 
     for record in Current.LoadOrderMods[0].LVSP:
         print
@@ -10143,9 +10081,8 @@ def TestLVSP():
 def TestANIO():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestANIO.esp")
+    newMod = Current.addMod("TestANIO.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestANIO.esp")
 
     for record in Current.LoadOrderMods[0].ANIO:
         print
@@ -10202,9 +10139,8 @@ def TestANIO():
 def TestWATR():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestWATR.esp")
+    newMod = Current.addMod("TestWATR.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestWATR.esp")
 
     for record in Current.LoadOrderMods[0].WATR:
         print
@@ -10337,9 +10273,8 @@ def TestWATR():
 def TestEFSH():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestEFSH.esp")
+    newMod = Current.addMod("TestEFSH.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestEFSH.esp")
 
     for record in Current.LoadOrderMods[0].EFSH:
         print
@@ -10532,9 +10467,8 @@ def TestEFSH():
 def TestIdenticalToMaster():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("TestIdentical.esp")
+    newMod = Current.addMod("TestIdentical.esp")
     Current.load()
-    newMod = Current.LookupModFile("TestIdentical.esp")
     for block, records in Current.LoadOrderMods[0].aggregates.items():
         for record in records:
             over = record.CopyAsOverride(newMod)
@@ -10562,13 +10496,10 @@ def TestIdenticalToMaster():
 def TestUndelete():
     Current = ObCollection()
     Current.addMod("Oblivion.esm")
-    Current.addMod("undelete.esp")
-    Current.addMod("TestUndelete.esp")
-    Current.addMod("TestDelete.esp")
+    oldMod = Current.addMod("undelete.esp")
+    newMod = Current.addMod("TestUndelete.esp")
+    delMod = Current.addMod("TestDelete.esp")
     Current.load()
-    oldMod = Current.LookupModFile("undelete.esp")
-    newMod = Current.LookupModFile("TestUndelete.esp")
-    delMod = Current.LookupModFile("TestDelete.esp")
     for records in oldMod.aggregates.values():
         for record in records:
             if record.IsDeleted:
@@ -10579,6 +10510,18 @@ def TestUndelete():
     newMod.save(False)
     delMod.save()
     Current.Close()
+
+def TestFilter():
+    with ObCollection() as Current:
+        modFile = Current.addMergeMod("FilterTest.esp")
+        Current.addMod("Oblivion.esm")
+##        Current.addMod("Oblivifall Master File.esm")
+        Current.load()
+        for group, records in modFile.aggregates.iteritems():
+            for record in records:
+                print
+                print 'HasInvalidFormIDs = ', record.HasInvalidFormIDs()
+                d(record)
 
 from timeit import Timer
 
@@ -10632,6 +10575,15 @@ from timeit import Timer
 ##phonenumber = raw_input("!")
 
 ##regressionTests()
+def quicktest():
+    with ObCollection() as Current:
+        modFile = Current.addMod("Oblivion.esm", Flags=0x202)
+##        Current.addMod("Oblivifall Master File.esm")
+        Current.load()
+        for group, records in modFile.aggregates.iteritems():
+            print len(records)
+
+quicktest()
 
 ##TestIdenticalToMaster()
 ##TestUndelete()
@@ -10700,6 +10652,7 @@ from timeit import Timer
 ##TestANIO()
 ##TestWATR()
 ##TestEFSH()
+##TestFilter()
 ####Current.debug(6, True)
 ##print "Entirely Finished\n"
 

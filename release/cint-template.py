@@ -7,7 +7,7 @@ from os.path import exists, join
 try:
     #See if cint is being used by Wrye Bash
     from bolt import CBash as CBashEnabled
-    from bolt import GPath, deprint, _, Path
+    from bolt import GPath, deprint, _, Path, Encode
 except:
     #It isn't, so replace the imported items with bare definitions
     CBashEnabled = "."
@@ -19,6 +19,17 @@ except:
         print obj
     def _(obj):
         return obj
+    def Encode(name,tryFirstEncoding=False):
+        if isinstance(name,Path): name = str(name)
+        if isinstance(name,str): return name
+        if isinstance(name,unicode):
+            if tryFirstEncoding:
+                try:
+                    return name.encode(tryFirstEncoding)
+                except UnicodeEncodeError:
+                    print _("Unable to encode '%s' in %s.") % (name, tryFirstEncoding)
+                    raise
+        return name
 
 _CBashRequiredVersion = (0,6,0)
 
@@ -71,12 +82,12 @@ except:
     CBash = None
     raise
 
-if(CBash):
+if CBash:
     def LoggingCB(logString):
         print logString,
         return 0
 
-    def RaiseCB():
+    def RaiseCB(raisedString):
         #Raising is mostly worthless in a callback
         #CTypes prints the error, but the traceback is useless
         #and it doesn't propagate properly
@@ -93,8 +104,10 @@ if(CBash):
         #CBash. Dunno.
 
         #This particular callback may disappear, or be morphed into something else
-        raise CBashError("Check the log.")
+        print "CBash encountered an error", raisedString, "Check the log."
+##        raise CBashError("Check the log.")
         return
+    
     try:
         _CGetVersionMajor = CBash.GetVersionMajor
         _CGetVersionMinor = CBash.GetVersionMinor
@@ -123,7 +136,7 @@ if(CBash):
     _CDeleteAllCollections = CBash.DeleteAllCollections
     _CDeleteAllCollections.errcheck = NegativeIsErrorCheck
     _CAddMod = CBash.AddMod
-    _CAddMod.errcheck = NegativeIsErrorCheck
+    _CAddMod.errcheck = ZeroIsErrorCheck
     _CLoadMod = CBash.LoadMod
     _CLoadMod.errcheck = NegativeIsErrorCheck
     _CUnloadMod = CBash.UnloadMod
@@ -175,6 +188,7 @@ if(CBash):
     _CGetRecordHistory = CBash.GetRecordHistory
     _CGetNumIdenticalToMasterRecords = CBash.GetNumIdenticalToMasterRecords
     _CGetIdenticalToMasterRecords = CBash.GetIdenticalToMasterRecords
+    _CIsRecordFormIDsInvalid = CBash.IsRecordFormIDsInvalid
     _CUpdateReferences = CBash.UpdateReferences
     _CGetRecordUpdatedReferences = CBash.GetRecordUpdatedReferences
     _CSetIDFields = CBash.SetIDFields
@@ -190,7 +204,7 @@ if(CBash):
     _CGetCollectionType.restype = c_long
     _CUnloadAllCollections.restype = c_long
     _CDeleteAllCollections.restype = c_long
-    _CAddMod.restype = c_long
+    _CAddMod.restype = c_ulong
     _CLoadMod.restype = c_long
     _CUnloadMod.restype = c_long
     _CCleanModMasters.restype = c_long
@@ -232,12 +246,13 @@ if(CBash):
     _CGetRecordHistory.restype = c_long
     _CGetNumIdenticalToMasterRecords.restype = c_long
     _CGetIdenticalToMasterRecords.restype = c_long
+    _CIsRecordFormIDsInvalid.restype = c_long
     _CUpdateReferences.restype = c_long
     _CGetRecordUpdatedReferences.restype = c_long
     _CSetIDFields.restype = c_long
     _CGetFieldAttribute.restype = c_ulong
     LoggingCallback = CFUNCTYPE(c_long, c_char_p)(LoggingCB)
-    RaiseCallback = CFUNCTYPE(None)(RaiseCB)
+    RaiseCallback = CFUNCTYPE(None, c_char_p)(RaiseCB)
     CBash.RedirectMessages(LoggingCallback)
     CBash.AllowRaising(RaiseCallback)
 
@@ -366,19 +381,19 @@ class FormID(object):
             self.master, self.objectID = master, objectID
 
         def __hash__(self):
-            return hash((str(self.master), self.objectID))
+            return hash((Encode(self.master,'mbcs'), self.objectID))
 
         def __getitem__(self, x):
             return self.master if x == 0 else int(self.objectID & 0x00FFFFFFL)
 
         def __repr__(self):
-            return "UnvalidatedFormID('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0x00FFFFFFL))
+            return "UnvalidatedFormID('%s', 0x%06X)" % (Encode(self.master,'mbcs'), int(self.objectID & 0x00FFFFFFL))
 
         def Validate(self, target):
             """Unvalidated FormIDs have to be tested for each destination collection
                A FormID is valid if its master is part of the destination collection"""
             targetID = target.GetParentCollection()._CollectionID
-            modID = _CGetModIDByName(targetID, str(self.master))
+            modID = _CGetModIDByName(targetID, Encode(self.master,'mbcs'))
             return FormID.ValidFormID(self.master, self.objectID, _CMakeShortFormID(modID, self.objectID , 0), targetID) if modID else self
 
         def GetShortFormID(self, target):
@@ -434,13 +449,13 @@ class FormID(object):
             self.master, self.objectID, self.shortID, self._CollectionID = master, objectID, shortID, collectionID
 
         def __hash__(self):
-            return hash((str(self.master), self.objectID))
+            return hash((Encode(self.master,'mbcs'), self.objectID))
 
         def __getitem__(self, x):
             return self.master if x == 0 else int(self.objectID & 0x00FFFFFFL)
 
         def __repr__(self):
-            return "ValidFormID('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0x00FFFFFFL))
+            return "ValidFormID('%s', 0x%06X)" % (Encode(self.master,'mbcs'), int(self.objectID & 0x00FFFFFFL))
 
         def Validate(self, target):
             """This FormID has already been validated for a specific collection.
@@ -601,13 +616,13 @@ class ActorValue(object):
             self.master, self.objectID = master, objectID
 
         def __hash__(self):
-            return hash((str(self.master), self.objectID))
+            return hash((Encode(self.master,'mbcs'), self.objectID))
 
         def __getitem__(self, x):
             return self.master if x == 0 else int(self.objectID & 0x00FFFFFFL)
 
         def __repr__(self):
-            return "UnvalidatedActorValue('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0x00FFFFFFL))
+            return "UnvalidatedActorValue('%s', 0x%06X)" % (Encode(self.master,'mbcs'), int(self.objectID & 0x00FFFFFFL))
 
         def Validate(self, target):
             """Unvalidated ActorValues have to be tested for each destination collection.
@@ -615,7 +630,7 @@ class ActorValue(object):
 
                Resolved Actor Value's are not formIDs, but can be treated as such for resolution."""
             targetID = target.GetParentCollection()._CollectionID
-            modID = _CGetModIDByName(targetID, str(self.master))
+            modID = _CGetModIDByName(targetID, Encode(self.master,'mbcs'))
             return ActorValue.ValidActorValue(self.master, self.objectID, _CMakeShortFormID(modID, self.objectID , 0), targetID) if modID else self
 
         def GetShortActorValue(self, target):
@@ -669,13 +684,13 @@ class ActorValue(object):
             self.master, self.objectID, self.shortID, self._CollectionID = master, objectID, shortID, collectionID
 
         def __hash__(self):
-            return hash((str(self.master), self.objectID))
+            return hash((Encode(self.master,'mbcs'), self.objectID))
 
         def __getitem__(self, x):
             return self.master if x == 0 else int(self.objectID & 0x00FFFFFFL)
 
         def __repr__(self):
-            return "ValidActorValue('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0x00FFFFFFL))
+            return "ValidActorValue('%s', 0x%06X)" % (Encode(self.master,'mbcs'), int(self.objectID & 0x00FFFFFFL))
 
         def Validate(self, target):
             """This ActorValue has already been validated for a specific record.
@@ -841,13 +856,13 @@ class MGEFCode(object):
             self.master, self.objectID = master, objectID
 
         def __hash__(self):
-            return hash((str(self.master), self.objectID))
+            return hash((Encode(self.master,'mbcs'), self.objectID))
 
         def __getitem__(self, x):
             return self.master if x == 0 else int(self.objectID & 0xFFFFFF00L)
 
         def __repr__(self):
-            return "UnvalidatedMGEFCode('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0xFFFFFF00L))
+            return "UnvalidatedMGEFCode('%s', 0x%06X)" % (Encode(self.master,'mbcs'), int(self.objectID & 0xFFFFFF00L))
 
         def Validate(self, target):
             """Unvalidated MGEFCodes have to be tested for each destination collection.
@@ -855,7 +870,7 @@ class MGEFCode(object):
 
                Resolved MGEFCode's are not formIDs, but can be treated as such for resolution."""
             targetID = target.GetParentCollection()._CollectionID
-            modID = _CGetModIDByName(targetID, str(self.master))
+            modID = _CGetModIDByName(targetID, Encode(self.master,'mbcs'))
             return MGEFCode.ValidMGEFCode(self.master, self.objectID, _CMakeShortFormID(modID, self.objectID , 1), targetID) if modID else self
 
         def GetShortMGEFCode(self, target):
@@ -909,13 +924,13 @@ class MGEFCode(object):
             self.master, self.objectID, self.shortID, self._CollectionID = master, objectID, shortID, collectionID
 
         def __hash__(self):
-            return hash((str(self.master), self.objectID))
+            return hash((Encode(self.master,'mbcs'), self.objectID))
 
         def __getitem__(self, x):
             return self.master if x == 0 else int(self.objectID & 0xFFFFFF00L)
 
         def __repr__(self):
-            return "ValidMGEFCode('%s', 0x%06X)" % (str(self.master), int(self.objectID & 0xFFFFFF00L))
+            return "ValidMGEFCode('%s', 0x%06X)" % (Encode(self.master,'mbcs'), int(self.objectID & 0xFFFFFF00L))
 
         def Validate(self, target):
             """This MGEFCode has already been validated for a specific record.
@@ -970,7 +985,7 @@ class MGEFCode(object):
            This class should never be instantiated except by class MGEFCode(object)."""
 
         def __init__(self, shortID):
-            self.shortID = str(shortID) if isinstance(shortID, basestring) else shortID
+            self.shortID = Encode(str(shortID) if isinstance(shortID, ISTRING) else shortID,'mbcs') if isinstance(shortID, basestring) else shortID
 
         def __hash__(self):
             return hash((self.shortID, None))
@@ -1111,6 +1126,83 @@ def SetCopyList(oElements, nValues):
 def ExtractExportList(Element):
     try: return [tuple(ExtractExportList(listElement) if hasattr(listElement, 'exportattrs') else getattr(listElement, attr) for attr in listElement.exportattrs) for listElement in Element]
     except TypeError: return [tuple(ExtractExportList(getattr(Element, attr)) if hasattr(getattr(Element, attr), 'exportattrs') else getattr(Element, attr) for attr in Element.exportattrs)]
+
+_dump_RecIndent = 2
+_dump_LastIndent = _dump_RecIndent
+_dump_ExpandLists = True
+
+def dump_record(record, expand=False):
+    def printRecord(record):
+        def fflags(y):
+            for x in range(32):
+                z = 1 << x
+                if y & z == z:
+                    print hex(z)
+        global _dump_RecIndent
+        global _dump_LastIndent
+        if hasattr(record, 'copyattrs'):
+            if _dump_ExpandLists == True:
+                msize = max([len(attr) for attr in record.copyattrs if not attr.endswith('_list')])
+            else:
+                msize = max([len(attr) for attr in record.copyattrs])
+            for attr in record.copyattrs:
+                wasList = False
+                if _dump_ExpandLists == True:
+                    if attr.endswith('_list'):
+                        attr = attr[:-5]
+                        wasList = True
+                rec = getattr(record, attr)
+                if _dump_RecIndent: print " " * (_dump_RecIndent - 1),
+                if wasList:
+                    print attr
+                else:
+                    print attr + " " * (msize - len(attr)), ":",
+                if rec is None:
+                    print rec
+                elif 'flag' in attr.lower() or 'service' in attr.lower():
+                    print hex(rec)
+                    if _dump_ExpandLists == True:
+                        for x in range(32):
+                            z = pow(2, x)
+                            if rec & z == z:
+                                print " " * _dump_RecIndent, " Active" + " " * (msize - len("  Active")), "  :", hex(z)
+
+                elif isinstance(rec, list):
+                    if len(rec) > 0:
+                        IsFidList = True
+                        for obj in rec:
+                            if not isinstance(obj, FormID):
+                                IsFidList = False
+                                break
+                        if IsFidList:
+                            print rec
+                        elif not wasList:
+                            print rec
+                    elif not wasList:
+                        print rec
+                elif isinstance(rec, basestring):
+                    print `rec`
+                elif not wasList:
+                    print rec
+                _dump_RecIndent += 2
+                printRecord(rec)
+                _dump_RecIndent -= 2
+        elif isinstance(record, list):
+            if len(record) > 0:
+                if hasattr(record[0], 'copyattrs'):
+                    _dump_LastIndent = _dump_RecIndent
+                    for rec in record:
+                        printRecord(rec)
+                        if _dump_LastIndent == _dump_RecIndent:
+                            print
+    global _dump_ExpandLists
+    _dump_ExpandLists = expand
+    try:
+        msize = max([len(attr) for attr in record.copyattrs])
+        print "  fid" + " " * (msize - len("fid")), ":", record.fid
+    except AttributeError:
+        pass
+    printRecord(record)
 
 # Classes
 # Any level Descriptors
@@ -1305,7 +1397,7 @@ class CBashSTRING_GROUP(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, self._FieldID + instance._FieldID, 0, 0, 0, 0, 0, 0)
-        else: _CSetField(instance._RecordID, self._FieldID + instance._FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
+        else: _CSetField(instance._RecordID, self._FieldID + instance._FieldID, 0, 0, 0, 0, 0, 0, Encode(nValue,'mbcs'), 0)
 
 class CBashISTRING_GROUP(object):
     __slots__ = ['_FieldID']
@@ -1319,7 +1411,7 @@ class CBashISTRING_GROUP(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, self._FieldID + instance._FieldID, 0, 0, 0, 0, 0, 0)
-        else: _CSetField(instance._RecordID, self._FieldID + instance._FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
+        else: _CSetField(instance._RecordID, self._FieldID + instance._FieldID, 0, 0, 0, 0, 0, 0, Encode(nValue,'mbcs'), 0)
 
 class CBashLIST_GROUP(object):
     __slots__ = ['_FieldID','_Type','_AsList']
@@ -1411,6 +1503,7 @@ class CBashISTRINGARRAY(object):
         if nValue is None or not len(nValue): _CDeleteField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
         else:
             length = len(nValue)
+            nValue = [Encode(value,'mbcs') for value in nValue]
             _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref((c_char_p * length)(*nValue)), length)
 
 class CBashGeneric(object):
@@ -1507,7 +1600,7 @@ class CBashFORMID_OR_STRING(object):
         IsFormID = _CGetFieldAttribute(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, 2) == API_FIELDS.FORMID
         nValue = None if nValue is None else nValue.GetShortFormID(instance) if IsFormID else nValue
         if nValue is None: _CDeleteField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
-        else: _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue)) if IsFormID else str(nValue), 0)
+        else: _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, byref(c_ulong(nValue)) if IsFormID else Encode(nValue,'mbcs'), 0)
 
 class CBashFORMID_OR_UINT32_ARRAY(object):
     __slots__ = ['_FieldID','_Size']
@@ -1659,7 +1752,7 @@ class CBashSTRING(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
-        else: _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
+        else: _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, Encode(nValue,'mbcs'), 0)
 
 class CBashISTRING(object):
     __slots__ = ['_FieldID']
@@ -1673,7 +1766,7 @@ class CBashISTRING(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0)
-        else: _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, str(nValue), 0)
+        else: _CSetField(instance._RecordID, self._FieldID, 0, 0, 0, 0, 0, 0, Encode(nValue,'mbcs'), 0)
 
 class CBashRECORDARRAY(object):
     __slots__ = ['_Type','_TypeName']
@@ -1946,7 +2039,7 @@ class CBashSTRING_LIST(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
-        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, str(nValue), 0)
+        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, Encode(nValue,'mbcs'), 0)
 
 class CBashISTRING_LIST(object):
     __slots__ = ['_ListFieldID']
@@ -1960,7 +2053,7 @@ class CBashISTRING_LIST(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0)
-        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, str(nValue), 0)
+        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, self._ListFieldID, 0, 0, 0, 0, Encode(nValue,'mbcs'), 0)
 
 # ListX2 Descriptors
 class CBashLIST_LISTX2(object):
@@ -2116,7 +2209,7 @@ class CBashSTRING_LISTX2(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
-        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, str(nValue), 0)
+        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, Encode(nValue,'mbcs'), 0)
 
 class CBashISTRING_LISTX2(object):
     __slots__ = ['_ListX2FieldID']
@@ -2130,7 +2223,7 @@ class CBashISTRING_LISTX2(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0)
-        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, str(nValue), 0)
+        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, self._ListX2FieldID, 0, 0, Encode(nValue,'mbcs'), 0)
 
 class CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX2(object):
     __slots__ = ['_ListX2FieldID']
@@ -2230,7 +2323,7 @@ class CBashSTRING_LISTX3(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
-        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, str(nValue), 0)
+        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, Encode(nValue,'mbcs'), 0)
 
 class CBashISTRING_LISTX3(object):
     __slots__ = ['_ListX3FieldID']
@@ -2244,7 +2337,7 @@ class CBashISTRING_LISTX3(object):
 
     def __set__(self, instance, nValue):
         if nValue is None: _CDeleteField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID)
-        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, str(nValue), 0)
+        else: _CSetField(instance._RecordID, instance._FieldID, instance._ListIndex, instance._ListFieldID, instance._ListX2Index, instance._ListX2FieldID, instance._ListX3Index, self._ListX3FieldID, Encode(nValue,'mbcs'), 0)
 
 class CBashUNKNOWN_OR_FORMID_OR_UINT32_LISTX3(object):
     __slots__ = ['_ListX3FieldID']
@@ -2714,7 +2807,10 @@ class FnvBaseRecord(object):
         """Returns true if the record is the last to load.
            If GetExtendedConflicts is True, scanned records will be considered.
            More efficient than running Conflicts() and checking the first value."""
-        return _CIsRecordWinning(self._RecordID, c_ulong(GetExtendedConflicts))
+        return _CIsRecordWinning(self._RecordID, c_ulong(GetExtendedConflicts)) > 0
+
+    def HasInvalidFormIDs(self):
+        return _CIsRecordFormIDsInvalid(self._RecordID) > 0
 
     def Conflicts(self, GetExtendedConflicts=False):
         numRecords = _CGetNumRecordConflicts(self._RecordID, c_ulong(GetExtendedConflicts)) #gives upper bound
@@ -2772,12 +2868,8 @@ class FnvBaseRecord(object):
         """This method is called by the bashed patch mod merger. The intention is
         to allow a record to be filtered according to the specified modSet. E.g.
         for a list record, items coming from mods not in the modSet could be
-        removed from the list.
-
-        In a case where items either cannot be filtered, or doing so will break
-        the record, False should be returned.  If filtering was successful, True
-        should be returned."""
-        return True
+        removed from the list."""
+        pass
 
     def CopyAsOverride(self, target, UseWinningParents=False):
         ##Record Creation Flags
@@ -2831,7 +2923,7 @@ class FnvBaseRecord(object):
         retValue = _CGetField(self._RecordID, 4, 0, 0, 0, 0, 0, 0, 0)
         return ISTRING(retValue) if retValue else None
     def set_eid(self, nValue):
-        nValue = 0 if nValue is None or not len(nValue) else str(nValue)
+        nValue = 0 if nValue is None or not len(nValue) else Encode(nValue,'mbcs')
         _CGetField.restype = POINTER(c_ulong)
         _CSetIDFields(self._RecordID, _CGetField(self._RecordID, 2, 0, 0, 0, 0, 0, 0, 0).contents.value, nValue)
     eid = property(get_eid, set_eid)
@@ -4400,7 +4492,7 @@ class FnvGMSTRecord(FnvBaseRecord):
         if nValue is None: _CDeleteField(self._RecordID, 7, 0, 0, 0, 0, 0, 0)
         else:
             fieldtype = _CGetFieldAttribute(self._RecordID, 7, 0, 0, 0, 0, 0, 0, 2)
-            _CSetField(self._RecordID, 7, 0, 0, 0, 0, 0, 0, byref(c_long(nValue)) if fieldtype == API_FIELDS.SINT32 else byref(c_float(round(nValue,6))) if fieldtype == API_FIELDS.FLOAT32 else str(nValue), 0)
+            _CSetField(self._RecordID, 7, 0, 0, 0, 0, 0, 0, byref(c_long(nValue)) if fieldtype == API_FIELDS.SINT32 else byref(c_float(round(nValue,6))) if fieldtype == API_FIELDS.FLOAT32 else Encode(str(nValue),'mbcs'), 0)
     value = property(get_value, set_value)
     exportattrs = copyattrs = FnvBaseRecord.baseattrs + ['value']
 
@@ -4958,12 +5050,6 @@ class FnvMGEFRecord(FnvBaseRecord):
 class FnvSCPTRecord(FnvBaseRecord):
     __slots__ = []
     _Type = 'SCPT'
-    def mergeFilter(self, target):
-        """Filter references that don't come from the specified modSet.
-           Since we can't actually do this for SCPT records, return False if
-           any references are to mods not in modSet."""
-        return ValidateList(self.references, target)
-
     UINT8_ARRAY_MACRO(unused1, 7, 4)
     UINT32_MACRO(numRefs, 8)
     UINT32_MACRO(compiledSize, 9)
@@ -5463,7 +5549,6 @@ class FnvCONTRecord(FnvBaseRecord):
         """Filter out items that don't come from specified modSet.
         Filters items."""
         self.items = [x for x in self.items if x.item.ValidateFormID(target)]
-        return True
 
     SINT16_MACRO(boundX1, 7)
     SINT16_MACRO(boundY1, 8)
@@ -6470,7 +6555,6 @@ class FnvNPC_Record(FnvBaseRecord):
         """Filter out items that don't come from specified modSet.
         Filters items."""
         self.items = [x for x in self.items if x.item.ValidateFormID(target)]
-        return True
 
     SINT16_MACRO(boundX1, 7)
     SINT16_MACRO(boundY1, 8)
@@ -6695,7 +6779,6 @@ class FnvCREARecord(FnvBaseRecord):
         """Filter out items that don't come from specified modSet.
         Filters items."""
         self.items = [x for x in self.items if x.item.ValidateFormID(target)]
-        return True
 
     class SoundType(ListComponent):
         __slots__ = []
@@ -7093,7 +7176,6 @@ class FnvLVLCRecord(FnvBaseRecord):
     def mergeFilter(self, target):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId.ValidateFormID(target)]
-        return True
 
     class Entry(ListComponent):
         __slots__ = []
@@ -7147,7 +7229,6 @@ class FnvLVLNRecord(FnvBaseRecord):
     def mergeFilter(self, target):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId.ValidateFormID(target)]
-        return True
 
     class Entry(ListComponent):
         __slots__ = []
@@ -7510,7 +7591,6 @@ class FnvLVLIRecord(FnvBaseRecord):
     def mergeFilter(self, target):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId.ValidateFormID(target)]
-        return True
 
     class Entry(ListComponent):
         __slots__ = []
@@ -8215,7 +8295,6 @@ class FnvQUSTRecord(FnvBaseRecord):
         #        and
         #        (not isinstance(x.param2,FormID) or x.param2[0] in modSet)
         #        )]
-        return True
 
     class Stage(ListComponent):
         __slots__ = []
@@ -9330,8 +9409,11 @@ class ObBaseRecord(object):
         """Returns true if the record is the last to load.
            If GetExtendedConflicts is True, scanned records will be considered.
            More efficient than running Conflicts() and checking the first value."""
-        return _CIsRecordWinning(self._RecordID, c_ulong(GetExtendedConflicts))
+        return _CIsRecordWinning(self._RecordID, c_ulong(GetExtendedConflicts)) > 0
 
+    def HasInvalidFormIDs(self):
+        return _CIsRecordFormIDsInvalid(self._RecordID) > 0
+    
     def Conflicts(self, GetExtendedConflicts=False):
         numRecords = _CGetNumRecordConflicts(self._RecordID, c_ulong(GetExtendedConflicts)) #gives upper bound
         if(numRecords > 1):
@@ -9389,12 +9471,8 @@ class ObBaseRecord(object):
         """This method is called by the bashed patch mod merger. The intention is
         to allow a record to be filtered according to the specified modSet. E.g.
         for a list record, items coming from mods not in the modSet could be
-        removed from the list.
-
-        In a case where items either cannot be filtered, or doing so will break
-        the record, False should be returned.  If filtering was successful, True
-        should be returned."""
-        return True
+        removed from the list."""
+        pass
 
     def CopyAsOverride(self, target, UseWinningParents=False):
         ##Record Creation Flags
@@ -9446,7 +9524,7 @@ class ObBaseRecord(object):
         retValue = _CGetField(self._RecordID, 4, 0, 0, 0, 0, 0, 0, 0)
         return ISTRING(retValue) if retValue else None
     def set_eid(self, nValue):
-        nValue = 0 if nValue is None or not len(nValue) else str(nValue)
+        nValue = 0 if nValue is None or not len(nValue) else Encode(nValue,'mbcs')
         _CGetField.restype = POINTER(c_ulong)
         _CSetIDFields(self._RecordID, _CGetField(self._RecordID, 2, 0, 0, 0, 0, 0, 0, 0).contents.value, nValue)
     eid = property(get_eid, set_eid)
@@ -9517,7 +9595,7 @@ class ObGMSTRecord(ObBaseRecord):
         if nValue is None: _CDeleteField(self._RecordID, 5, 0, 0, 0, 0, 0, 0)
         else:
             fieldtype = _CGetFieldAttribute(self._RecordID, 5, 0, 0, 0, 0, 0, 0, 2)
-            try: _CSetField(self._RecordID, 5, 0, 0, 0, 0, 0, 0, byref(c_long(int(nValue))) if fieldtype == API_FIELDS.SINT32 else byref(c_float(round(nValue,6))) if fieldtype == API_FIELDS.FLOAT32 else str(nValue), 0)
+            try: _CSetField(self._RecordID, 5, 0, 0, 0, 0, 0, 0, byref(c_long(int(nValue))) if fieldtype == API_FIELDS.SINT32 else byref(c_float(round(nValue,6))) if fieldtype == API_FIELDS.FLOAT32 else Encode(str(nValue),'mbcs'), 0)
             except TypeError: return
             except ValueError: return
     value = property(get_value, set_value)
@@ -10359,7 +10437,6 @@ class ObCONTRecord(ObBaseRecord):
         """Filter out items that don't come from specified modSet.
         Filters items."""
         self.items = [x for x in self.items if x.item.ValidateFormID(target)]
-        return True
 
     STRING_MACRO(full, 5)
     ISTRING_MACRO(modPath, 6)
@@ -10388,7 +10465,6 @@ class ObCREARecord(ObBaseRecord):
         self.spells = [x for x in self.spells if x.ValidateFormID(target)]
         self.factions = [x for x in self.factions if x.faction.ValidateFormID(target)]
         self.items = [x for x in self.items if x.item.ValidateFormID(target)]
-        return True
 
     class Sound(ListComponent):
         __slots__ = []
@@ -11154,7 +11230,6 @@ class ObLVLCRecord(ObBaseRecord):
     def mergeFilter(self, target):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId.ValidateFormID(target)]
-        return True
 
     UINT8_MACRO(chanceNone, 5)
     UINT8_FLAG_MACRO(flags, 6)
@@ -11183,7 +11258,6 @@ class ObLVLIRecord(ObBaseRecord):
     def mergeFilter(self, target):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId.ValidateFormID(target)]
-        return True
 
     UINT8_MACRO(chanceNone, 5)
     UINT8_FLAG_MACRO(flags, 6)
@@ -11211,7 +11285,6 @@ class ObLVSPRecord(ObBaseRecord):
     def mergeFilter(self, target):
         """Filter out items that don't come from specified modSet."""
         self.entries = [entry for entry in self.entries if entry.listId.ValidateFormID(target)]
-        return True
 
     UINT8_MACRO(chanceNone, 5)
     UINT8_FLAG_MACRO(flags, 6)
@@ -11382,7 +11455,6 @@ class ObNPC_Record(ObBaseRecord):
         self.spells = [x for x in self.spells if x.ValidateFormID(target)]
         self.factions = [x for x in self.factions if x.faction.ValidateFormID(target)]
         self.items = [x for x in self.items if x.item.ValidateFormID(target)]
-        return True
 
     STRING_MACRO(full, 5)
     ISTRING_MACRO(modPath, 6)
@@ -11596,7 +11668,6 @@ class ObQUSTRecord(ObBaseRecord):
         #        and
         #        (not isinstance(x.param2,FormID) or x.param2.ValidateFormID(target))
         #        )]
-        return True
 
     class Stage(ListComponent):
         __slots__ = []
@@ -11956,12 +12027,6 @@ class ObSBSPRecord(ObBaseRecord):
 class ObSCPTRecord(ObBaseRecord):
     __slots__ = []
     _Type = 'SCPT'
-    def mergeFilter(self, target):
-        """Filter references that don't come from the specified modSet.
-           Since we can't actually do this for SCPT records, return False if
-           any references are to mods not in modSet."""
-        return ValidateList(self.references, target)
-
     UINT8_ARRAY_MACRO(unused1, 5, 2)
     UINT32_MACRO(numRefs, 6)
     UINT32_MACRO(compiledSize, 7)
@@ -12552,13 +12617,13 @@ class ObModFile(object):
 
     def HasRecord(self, RecordIdentifier):
         if not RecordIdentifier: return False
-        formID, editorID = (0, RecordIdentifier) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
+        formID, editorID = (0, Encode(RecordIdentifier,'mbcs')) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
         if not (formID or editorID): return False
         return bool(_CGetRecordID(self._ModID, formID, editorID))
 
     def LookupRecord(self, RecordIdentifier):
         if not RecordIdentifier: return None
-        formID, editorID = (0, RecordIdentifier) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
+        formID, editorID = (0, Encode(RecordIdentifier,'mbcs')) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
         if not (formID or editorID): return None
         RecordID = _CGetRecordID(self._ModID, formID, editorID)
         if RecordID:
@@ -12569,7 +12634,7 @@ class ObModFile(object):
         return None
 
     def IsEmpty(self):
-        return _CIsModEmpty(self._ModID)
+        return _CIsModEmpty(self._ModID) > 0
 
     def GetNewRecordTypes(self):
         numRecords = _CGetModNumTypes(self._ModID)
@@ -12622,7 +12687,7 @@ class ObModFile(object):
         _CUnloadMod(self._ModID)
 
     def save(self, CloseCollection=True, CleanMasters=True, DestinationName=None):
-        return _CSaveMod(self._ModID, c_ulong(0 | (0x00000001 if CleanMasters else 0) | (0x00000002 if CloseCollection else 0)), DestinationName)
+        return _CSaveMod(self._ModID, c_ulong(0 | (0x00000001 if CleanMasters else 0) | (0x00000002 if CloseCollection else 0)), Encode(DestinationName,'mbcs') if DestinationName else DestinationName)
 
     @property
     def TES4(self):
@@ -12759,13 +12824,13 @@ class FnvModFile(object):
 
     def HasRecord(self, RecordIdentifier):
         if not RecordIdentifier: return False
-        formID, editorID = (0, RecordIdentifier) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
+        formID, editorID = (0, Encode(RecordIdentifier,'mbcs')) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
         if not (formID or editorID): return False
         return bool(_CGetRecordID(self._ModID, formID, editorID))
 
     def LookupRecord(self, RecordIdentifier):
         if not RecordIdentifier: return None
-        formID, editorID = (0, RecordIdentifier) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
+        formID, editorID = (0, Encode(RecordIdentifier,'mbcs')) if isinstance(RecordIdentifier, basestring) else (RecordIdentifier.GetShortFormID(self),0)
         if not (formID or editorID): return None
         RecordID = _CGetRecordID(self._ModID, formID, editorID)
         if RecordID:
@@ -12776,7 +12841,7 @@ class FnvModFile(object):
         return None
 
     def IsEmpty(self):
-        return _CIsModEmpty(self._ModID)
+        return _CIsModEmpty(self._ModID) > 0
 
     def GetNewRecordTypes(self):
         numRecords = _CGetModNumTypes(self._ModID)
@@ -12829,7 +12894,7 @@ class FnvModFile(object):
         _CUnloadMod(self._ModID)
 
     def save(self, CloseCollection=True, CleanMasters=True, DestinationName=None):
-        return _CSaveMod(self._ModID, c_ulong(0 | (0x00000001 if CleanMasters else 0) | (0x00000002 if CloseCollection else 0)), DestinationName)
+        return _CSaveMod(self._ModID, c_ulong(0 | (0x00000001 if CleanMasters else 0) | (0x00000002 if CloseCollection else 0)), Encode(DestinationName,'mbcs') if DestinationName else DestinationName)
 
     @property
     def TES4(self):
@@ -13030,14 +13095,15 @@ class FnvModFile(object):
                      ("HUNG", self.HUNG),("SLPD", self.SLPD),))
 
 class ObCollection:
-    __slots__ = ['_CollectionID','_WhichGame','_ModIndex','LoadOrderMods','AllMods']
+    __slots__ = ['_CollectionID','_WhichGame','_ModIndex','_ModType','LoadOrderMods','AllMods']
     """Collection of esm/esp's."""
     def __init__(self, CollectionID=None, ModsPath=".", CollectionType=0):
         #CollectionType == 0, Oblivion
         #CollectionType == 1, Fallout 3
         #CollectionType == 2, Fallout New Vegas
-        self._CollectionID, self._WhichGame = (CollectionID,_CGetCollectionType(CollectionID)) if CollectionID else (_CCreateCollection(str(ModsPath), CollectionType),CollectionType)
+        self._CollectionID, self._WhichGame = (CollectionID,_CGetCollectionType(CollectionID)) if CollectionID else (_CCreateCollection(Encode(ModsPath,'mbcs'), CollectionType),CollectionType)
         self._ModIndex, self.LoadOrderMods, self.AllMods = -1, [], []
+        self._ModType = ObModFile if self._WhichGame == 0 else FnvModFile
 
     def __enter__(self):
         return self
@@ -13110,7 +13176,7 @@ class ObCollection:
 ##        // Use if you're planning on iterating through every placeable in a specific cell
 ##        //   so that you don't have to check the world cell as well.
 ##
-##        //IgnoreAbsentMasters causes any records that override masters not in the load order to be dropped
+##        //IgnoreInactiveMasters causes any records that override masters not in the load order to be dropped
 ##        // If it is true, it forces IsAddMasters to be false.
 ##        // Allows mods not in load order to copy records
 ##
@@ -13120,32 +13186,33 @@ class ObCollection:
 ##
 ##        //Only the following combinations are tested:
 ##        // Normal:  (fIsMinLoad or fIsFullLoad) + fIsInLoadOrder + fIsSaveable + fIsAddMasters + fIsLoadMasters
-##        // Merged:  (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIgnoreAbsentMasters
-##        // Scanned: (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIgnoreAbsentMasters + fIsExtendedConflicts
+##        // Merged:  (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIsIgnoreInactiveMasters
+##        // Scanned: (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIsIgnoreInactiveMasters + fIsExtendedConflicts
 
-##        fIsMinLoad             = 0x00000001
-##        fIsFullLoad            = 0x00000002
-##        fIsSkipNewRecords      = 0x00000004
-##        fIsInLoadOrder         = 0x00000008
-##        fIsSaveable            = 0x00000010
-##        fIsAddMasters          = 0x00000020
-##        fIsLoadMasters         = 0x00000040
-##        fIsExtendedConflicts   = 0x00000080
-##        fIsTrackNewTypes       = 0x00000100
-##        fIsIndexLANDs          = 0x00000200
-##        fIsFixupPlaceables     = 0x00000400
-##        fIsCreateNew           = 0x00000800
-##        fIsIgnoreAbsentMasters = 0x00001000
-##        fIsSkipAllRecords      = 0x00002000
+##        fIsMinLoad               = 0x00000001
+##        fIsFullLoad              = 0x00000002
+##        fIsSkipNewRecords        = 0x00000004
+##        fIsInLoadOrder           = 0x00000008
+##        fIsSaveable              = 0x00000010
+##        fIsAddMasters            = 0x00000020
+##        fIsLoadMasters           = 0x00000040
+##        fIsExtendedConflicts     = 0x00000080
+##        fIsTrackNewTypes         = 0x00000100
+##        fIsIndexLANDs            = 0x00000200
+##        fIsFixupPlaceables       = 0x00000400
+##        fIsCreateNew             = 0x00000800
+##        fIsIgnoreInactiveMasters = 0x00001000
+##        fIsSkipAllRecords        = 0x00002000
 
         if Flags is None: Flags = 0x00000069 | (0x00000800 if CreateNew else 0) | (0x00000010 if Saveable else 0) | (0x00000040 if LoadMasters else 0)
-        _CAddMod(self._CollectionID, str(FileName), Flags & ~0x00000003 if NoLoad else ((Flags & ~0x00000002) | 0x00000001) if MinLoad else ((Flags & ~0x00000001) | 0x00000002))
-        return None
+        return self._ModType(_CAddMod(self._CollectionID, Encode(FileName,'mbcs'), Flags & ~0x00000003 if NoLoad else ((Flags & ~0x00000002) | 0x00000001) if MinLoad else ((Flags & ~0x00000001) | 0x00000002)))
 
     def addMergeMod(self, FileName):
+        #fIsIgnoreInactiveMasters, fIsSkipNewRecords
         return self.addMod(FileName, Flags=0x00001004)
 
     def addScanMod(self, FileName):
+        #fIsIgnoreInactiveMasters, fIsExtendedConflicts, fIsSkipNewRecords
         return self.addMod(FileName, Flags=0x00001084)
 
     def load(self):
@@ -13155,25 +13222,25 @@ class ObCollection:
         if _NumModsIDs > 0:
             cModIDs = (c_ulong * _NumModsIDs)()
             _CGetLoadOrderModIDs(self._CollectionID, byref(cModIDs))
-            self.LoadOrderMods = [ObModFile(ModID) for ModID in cModIDs] if self._WhichGame == 0 else [FnvModFile(ModID) for ModID in cModIDs] if self._WhichGame == 2 else []
+            self.LoadOrderMods = [self._ModType(ModID) for ModID in cModIDs]
 
         _NumModsIDs = _CGetAllNumMods(self._CollectionID)
         if _NumModsIDs > 0:
             cModIDs = (c_ulong * _NumModsIDs)()
             _CGetAllModIDs(self._CollectionID, byref(cModIDs))
-            self.AllMods = [ObModFile(ModID) for ModID in cModIDs] if self._WhichGame == 0 else [FnvModFile(ModID) for ModID in cModIDs] if self._WhichGame == 2 else []
+            self.AllMods = [self._ModType(ModID) for ModID in cModIDs]
 
     def LookupRecords(self, RecordIdentifier, GetExtendedConflicts=False):
         if not RecordIdentifier: return None
         return [record for record in [mod.LookupRecord(RecordIdentifier) for mod in reversed(self.AllMods if GetExtendedConflicts else self.LoadOrderMods)] if record is not None]
 
     def LookupModFile(self, ModName):
-        ModID = _CGetModIDByName(self._CollectionID, str(ModName))
-        if ModID == -1: raise KeyError(_("ModName(%s) not found in collection (%08X)\n") % (ModName, self._CollectionID) + self.Debug_DumpModFiles())
-        return ObModFile(ModID) if self._WhichGame == 0 else FnvModFile(ModID) if self._WhichGame == 2 else None
+        ModID = _CGetModIDByName(self._CollectionID, Encode(ModName,'mbcs'))
+        if ModID == 0: raise KeyError(_("ModName(%s) not found in collection (%08X)\n") % (ModName, self._CollectionID) + self.Debug_DumpModFiles())
+        return self._ModType(ModID)
 
     def LookupModFileLoadOrder(self, ModName):
-        return _CGetModLoadOrderByName(self._CollectionID, str(ModName))
+        return _CGetModLoadOrderByName(self._CollectionID, Encode(ModName,'mbcs'))
 
     def UpdateReferences(self, Old_NewFormIDs):
         return sum([mod.UpdateReferences(Old_NewFormIDs) for mod in self.LoadOrderMods])
@@ -13182,4 +13249,7 @@ class ObCollection:
         return _CGetRecordUpdatedReferences(self._CollectionID, 0)
 
     def Debug_DumpModFiles(self):
-        return '\n'.join([_("Collection (%08X) contains the following modfiles:") % (self._CollectionID,)].extend([_("Load Order (%s), Name(%s)") % ('--' if _CGetModLoadOrderByID(mod._ModID) == -1 else '%02X' % (_CGetModLoadOrderByID(mod._ModID),), mod.ModName) if mod.ModName == mod.FileName else _("Load Order (%s), ModName(%s) FileName(%s)") % ('--' if _CGetModLoadOrderByID(mod._ModID) == -1 else '%02X' % (_CGetModLoadOrderByID(mod._ModID)), mod.ModName, mod.FileName) for mod in self.AllMods]))
+        col = [_("Collection (%08X) contains the following modfiles:") % (self._CollectionID,)]
+        files = [_("Load Order (%s), Name(%s)") % ('--' if _CGetModLoadOrderByID(mod._ModID) == -1 else '%02X' % (_CGetModLoadOrderByID(mod._ModID),), mod.ModName) if mod.ModName == mod.FileName else _("Load Order (%s), ModName(%s) FileName(%s)") % ('--' if _CGetModLoadOrderByID(mod._ModID) == -1 else '%02X' % (_CGetModLoadOrderByID(mod._ModID)), mod.ModName, mod.FileName) for mod in self.AllMods]
+        col.extend(files)
+        return '\n'.join(col)

@@ -40,7 +40,7 @@ GPL License and Copyright Notice ============================================
 
 extern int (*printer)(const char * _Format, ...);
 extern SINT32 (*LoggingCallback)(const STRING);
-extern void (*RaiseCallback)();
+extern void (*RaiseCallback)(const STRING);
 
 enum whichGameTypes {
     eIsOblivion = 0,
@@ -452,7 +452,7 @@ class FormIDHandlerClass
         bool   IsValid(const unsigned char *_SrcBuf);
     };
 
-class CreateRecordOptions
+class CreationFlags
     {
     private:
         enum createFlags
@@ -462,9 +462,9 @@ class CreateRecordOptions
             };
 
     public:
-        CreateRecordOptions();
-        CreateRecordOptions(UINT32 nFlags);
-        ~CreateRecordOptions();
+        CreationFlags();
+        CreationFlags(UINT32 nFlags);
+        ~CreationFlags();
 
         bool SetAsOverride;
         bool CopyWinningParent;
@@ -528,20 +528,20 @@ class ModFlags
         // Scanned: (fIsMinLoad or fIsFullLoad) + fIsSkipNewRecords + fIsExtendedConflicts
         enum modFlags
             {
-            fIsMinLoad             = 0x00000001,
-            fIsFullLoad            = 0x00000002,
-            fIsSkipNewRecords      = 0x00000004,
-            fIsInLoadOrder         = 0x00000008,
-            fIsSaveable            = 0x00000010,
-            fIsAddMasters          = 0x00000020,
-            fIsLoadMasters         = 0x00000040,
-            fIsExtendedConflicts   = 0x00000080,
-            fIsTrackNewTypes       = 0x00000100,
-            fIsIndexLANDs          = 0x00000200,
-            fIsFixupPlaceables     = 0x00000400,
-            fIsCreateNew           = 0x00000800,
-            fIsIgnoreAbsentMasters = 0x00001000,
-            fIsSkipAllRecords      = 0x00002000,
+            fIsMinLoad               = 0x00000001,
+            fIsFullLoad              = 0x00000002,
+            fIsSkipNewRecords        = 0x00000004,
+            fIsInLoadOrder           = 0x00000008,
+            fIsSaveable              = 0x00000010,
+            fIsAddMasters            = 0x00000020,
+            fIsLoadMasters           = 0x00000040,
+            fIsExtendedConflicts     = 0x00000080,
+            fIsTrackNewTypes         = 0x00000100,
+            fIsIndexLANDs            = 0x00000200,
+            fIsFixupPlaceables       = 0x00000400,
+            fIsCreateNew             = 0x00000800,
+            fIsIgnoreInactiveMasters = 0x00001000,
+            fIsSkipAllRecords        = 0x00002000,
             };
 
     public:
@@ -563,7 +563,7 @@ class ModFlags
         bool IsIndexLANDs;
         bool IsFixupPlaceables;
         bool IsCreateNew;
-        bool IsIgnoreAbsentMasters;
+        bool IsIgnoreInactiveMasters;
 
         //For internal use, may not be set by constructor
         bool LoadedGRUPs;

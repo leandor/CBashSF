@@ -51,11 +51,6 @@ bool FormIDOp::Stop()
     return stop;
     }
 
-bool FormIDOp::GetResult()
-    {
-    return result;
-    }
-
 FormIDResolver::FormIDResolver(const UINT8 (&_ResolveTable)[256], const unsigned char * const _FileStart, const unsigned char * const _FileEnd):
     FormIDOp(),
     ResolveTable(_ResolveTable),
@@ -75,13 +70,19 @@ bool FormIDResolver::Accept(UINT32 &curFormID)
     if((curFormID & 0x00FFFFFF) < END_HARDCODED_IDS)
         curFormID &= 0x00FFFFFF;
     else
+        {
+        //ModIndex = ResolveTable[curFormID >> 24];
         curFormID = (ResolveTable[curFormID >> 24] << 24 ) | (curFormID & 0x00FFFFFF);
+        //result = result || ModIndex == 0xFF;
+        }
     return stop;
     }
 
 bool FormIDResolver::AcceptMGEF(UINT32 &curMgefCode)
     {
+    //ModIndex = ResolveTable[curMgefCode & 0x000000FF];
     curMgefCode = (ResolveTable[curMgefCode & 0x000000FF]) | (curMgefCode & 0xFFFFFF00);
+    //result = result || ModIndex == 0xFF;
     return stop;
     }
 

@@ -159,7 +159,7 @@ CPPDLLEXTERN void RedirectMessages(SINT32 (*_LoggingCallback)(const STRING))
         }
     }
 
-CPPDLLEXTERN void AllowRaising(void (*_RaiseCallback)())
+CPPDLLEXTERN void AllowRaising(void (*_RaiseCallback)(const STRING))
     {
     RaiseCallback = _RaiseCallback;
     }
@@ -236,7 +236,7 @@ CPPDLLEXTERN Collection * CreateCollection(STRING const ModsPath, const UINT32 C
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -323,7 +323,7 @@ CPPDLLEXTERN SINT32 DeleteCollection(Collection *CollectionID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -347,7 +347,7 @@ CPPDLLEXTERN SINT32 LoadCollection(Collection *CollectionID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -371,7 +371,7 @@ CPPDLLEXTERN SINT32 UnloadCollection(Collection *CollectionID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -394,7 +394,7 @@ CPPDLLEXTERN SINT32 GetCollectionType(Collection *CollectionID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -418,7 +418,7 @@ CPPDLLEXTERN SINT32 UnloadAllCollections()
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -443,13 +443,13 @@ CPPDLLEXTERN SINT32 DeleteAllCollections()
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 ////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
 //Mod action functions
-CPPDLLEXTERN SINT32 AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField)
+CPPDLLEXTERN ModFile * AddMod(Collection *CollectionID, STRING const ModName, const UINT32 ModFlagsField)
     {
     PROFILE_FUNC
 
@@ -471,8 +471,8 @@ CPPDLLEXTERN SINT32 AddMod(Collection *CollectionID, STRING const ModName, const
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
-    return -1;
+        RaiseCallback(__FUNCTION__);
+    return NULL;
     }
 
 CPPDLLEXTERN SINT32 LoadMod(ModFile *ModID)
@@ -497,7 +497,7 @@ CPPDLLEXTERN SINT32 LoadMod(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -522,7 +522,7 @@ CPPDLLEXTERN SINT32 UnloadMod(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -546,7 +546,7 @@ CPPDLLEXTERN SINT32 CleanModMasters(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -577,7 +577,7 @@ CPPDLLEXTERN SINT32 SaveMod(ModFile *ModID, const UINT32 SaveFlagsField, STRING 
         {
         printer("\n\n");
         if(RaiseCallback != NULL)
-            RaiseCallback();
+            RaiseCallback(__FUNCTION__);
         }
     return err;
     }
@@ -602,7 +602,7 @@ CPPDLLEXTERN SINT32 GetAllNumMods(Collection *CollectionID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -628,7 +628,7 @@ CPPDLLEXTERN SINT32 GetAllModIDs(Collection *CollectionID, MODIDARRAY ModIDs)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -651,7 +651,7 @@ CPPDLLEXTERN SINT32 GetLoadOrderNumMods(Collection *CollectionID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -677,7 +677,7 @@ CPPDLLEXTERN SINT32 GetLoadOrderModIDs(Collection *CollectionID, MODIDARRAY ModI
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -700,7 +700,7 @@ CPPDLLEXTERN STRING GetFileNameByID(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -723,7 +723,7 @@ CPPDLLEXTERN STRING GetFileNameByLoadOrder(Collection *CollectionID, const UINT3
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -746,7 +746,7 @@ CPPDLLEXTERN STRING GetModNameByID(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -769,7 +769,7 @@ CPPDLLEXTERN STRING GetModNameByLoadOrder(Collection *CollectionID, const UINT32
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -803,7 +803,7 @@ CPPDLLEXTERN ModFile * GetModIDByName(Collection *CollectionID, STRING const Mod
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -827,7 +827,7 @@ CPPDLLEXTERN ModFile * GetModIDByLoadOrder(Collection *CollectionID, const UINT3
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -850,7 +850,7 @@ CPPDLLEXTERN SINT32 GetModLoadOrderByName(Collection *CollectionID, STRING const
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -863,8 +863,8 @@ CPPDLLEXTERN SINT32 GetModLoadOrderByID(ModFile *ModID)
         //ValidatePointer(ModID);
         if(ModID->Flags.IsInLoadOrder)
             return ModID->FormIDHandler.ExpandedIndex;
-        if(RaiseCallback != NULL)
-            RaiseCallback();
+        //if(RaiseCallback != NULL)
+        //    RaiseCallback(__FUNCTION__);
         return -1;
         }
     catch(std::exception &ex)
@@ -877,7 +877,7 @@ CPPDLLEXTERN SINT32 GetModLoadOrderByID(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -2;
     }
 
@@ -900,7 +900,7 @@ CPPDLLEXTERN ModFile * GetModIDByRecordID(Record *RecordID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -923,7 +923,7 @@ CPPDLLEXTERN Collection * GetCollectionIDByRecordID(Record *RecordID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -946,7 +946,7 @@ CPPDLLEXTERN Collection * GetCollectionIDByModID(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -969,7 +969,7 @@ CPPDLLEXTERN UINT32 IsModEmpty(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return 0;
     }
 
@@ -984,7 +984,7 @@ CPPDLLEXTERN SINT32 GetModNumTypes(ModFile *ModID)
             {
             printer("GetModNumTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->ModName);
             if(RaiseCallback != NULL)
-                RaiseCallback();
+                RaiseCallback(__FUNCTION__);
             return -1;
             }
 
@@ -1000,7 +1000,7 @@ CPPDLLEXTERN SINT32 GetModNumTypes(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1015,7 +1015,7 @@ CPPDLLEXTERN SINT32 GetModTypes(ModFile *ModID, UINT32ARRAY RecordTypes)
             {
             printer("GetModTypes: Warning - Unable to report record types for mod \"%s\". Tracking is disabled via flag.\n", ModID->ModName);
             if(RaiseCallback != NULL)
-                RaiseCallback();
+                RaiseCallback(__FUNCTION__);
             return -1;
             }
 
@@ -1034,7 +1034,7 @@ CPPDLLEXTERN SINT32 GetModTypes(ModFile *ModID, UINT32ARRAY RecordTypes)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1057,7 +1057,7 @@ CPPDLLEXTERN SINT32 GetModNumEmptyGRUPs(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1080,7 +1080,7 @@ CPPDLLEXTERN SINT32 GetModNumOrphans(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1105,7 +1105,7 @@ CPPDLLEXTERN SINT32 GetModOrphansFormIDs(ModFile *ModID, FORMIDARRAY FormIDs)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1139,7 +1139,7 @@ CPPDLLEXTERN STRING GetLongIDName(Record *RecordID, const UINT32 FormID, const b
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -1161,7 +1161,7 @@ CPPDLLEXTERN UINT32 MakeShortFormID(ModFile *ModID, const UINT32 ObjectID, const
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1188,7 +1188,7 @@ CPPDLLEXTERN Record * CreateRecord(ModFile *ModID, const UINT32 RecordType, cons
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return 0;
     }
 
@@ -1214,7 +1214,7 @@ CPPDLLEXTERN Record * CopyRecord(Record *RecordID, ModFile *DestModID, Record *D
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -1237,7 +1237,7 @@ CPPDLLEXTERN SINT32 UnloadRecord(Record *RecordID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return 0;
     }
 
@@ -1261,7 +1261,7 @@ CPPDLLEXTERN SINT32 ResetRecord(Record *RecordID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return 0;
     }
 
@@ -1308,7 +1308,7 @@ CPPDLLEXTERN SINT32 DeleteRecord(Record *RecordID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return 0;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1342,7 +1342,7 @@ CPPDLLEXTERN Record * GetRecordID(ModFile *ModID, const FORMID RecordFormID, STR
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 
@@ -1365,7 +1365,7 @@ CPPDLLEXTERN SINT32 GetNumRecords(ModFile *ModID, const UINT32 RecordType)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1390,7 +1390,7 @@ CPPDLLEXTERN SINT32 GetRecordIDs(ModFile *ModID, const UINT32 RecordType, RECORD
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1427,7 +1427,7 @@ CPPDLLEXTERN SINT32 IsRecordWinning(Record *RecordID, const bool GetExtendedConf
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1450,7 +1450,7 @@ CPPDLLEXTERN SINT32 GetNumRecordConflicts(Record *RecordID, const bool GetExtend
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1473,7 +1473,7 @@ CPPDLLEXTERN SINT32 GetRecordConflicts(Record *RecordID, RECORDIDARRAY RecordIDs
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1497,7 +1497,7 @@ CPPDLLEXTERN SINT32 GetRecordHistory(Record *RecordID, RECORDIDARRAY RecordIDs)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1532,7 +1532,7 @@ CPPDLLEXTERN SINT32 GetNumIdenticalToMasterRecords(ModFile *ModID)
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1562,7 +1562,30 @@ CPPDLLEXTERN SINT32 GetIdenticalToMasterRecords(ModFile *ModID, RECORDIDARRAY Re
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
+    return -1;
+    }
+
+CPPDLLEXTERN SINT32 IsRecordFormIDsInvalid(Record *RecordID)
+    {
+    PROFILE_FUNC
+
+    try
+        {
+        RecordInvalidFormIDChecker checker;
+        return checker.Accept(RecordID);
+        }
+    catch(std::exception &ex)
+        {
+        PRINT_EXCEPTION(ex);
+        }
+    catch(...)
+        {
+        PRINT_ERROR;
+        }
+    printer("\n\n");
+    if(RaiseCallback != NULL)
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1642,7 +1665,7 @@ CPPDLLEXTERN SINT32 UpdateReferences(ModFile *ModID, Record *RecordID, FORMIDARR
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1671,7 +1694,7 @@ CPPDLLEXTERN SINT32 GetRecordUpdatedReferences(Collection *CollectionID, Record 
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1698,7 +1721,7 @@ CPPDLLEXTERN SINT32 SetIDFields(Record *RecordID, const FORMID FormID, STRING co
         }
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return -1;
     }
 
@@ -1726,6 +1749,17 @@ CPPDLLEXTERN void SetField(Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue
             FormIDMasterUpdater checker(RecordID);
             //checker.Accept(curRecord->formID); //FormID can only be changed through SetRecordIDs, so no need to check
             RecordID->VisitFormIDs(checker);
+            //RecordID->HasInvalidFormIDs(checker.result);
+            //if(checker.result)
+            //    {
+            //    UINT8 ModIndex = (UINT8)(RecordID->formID >> 24);
+            //    ModFile *ModID = RecordID->GetParentMod();
+            //    UINT8 CollapsedIndex = ModID->FormIDHandler.CollapseTable[ModIndex];
+            //    STRING LongID = CollapsedIndex >= ModID->TES4.MAST.size() ? ModID->ModName : ModID->TES4.MAST[CollapsedIndex];
+            //    VSDPRINT(RecordID->GetStrType());
+            //    PRINT_FIELD_IDENTIFIERS;
+            //    printer("SetField: Error! Record (%s, 0x%06X) in mod (%s) contains an invalid FormID!\n", LongID, RecordID->formID & 0x00FFFFFF, ModID->ModName);
+            //    }
             }
 
         RecordID->IsChanged(true);
@@ -1743,7 +1777,7 @@ CPPDLLEXTERN void SetField(Record *RecordID, FIELD_IDENTIFIERS, void *FieldValue
     PRINT_FIELD_IDENTIFIERS;
     printer("ArraySize: %i\n\n", ArraySize);
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return;
     }
 
@@ -1781,7 +1815,7 @@ CPPDLLEXTERN void DeleteField(Record *RecordID, FIELD_IDENTIFIERS)
     PRINT_FIELD_IDENTIFIERS;
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return;
     }
 ////////////////////////////////////////////////////////////////////////
@@ -1821,7 +1855,7 @@ CPPDLLEXTERN UINT32 GetFieldAttribute(Record *RecordID, FIELD_IDENTIFIERS, const
     PRINT_FIELD_IDENTIFIERS;
     printer("WhichAttribute: %i\n\n", WhichAttribute);
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return UNKNOWN_FIELD;
     }
 
@@ -1856,7 +1890,7 @@ CPPDLLEXTERN void * GetField(Record *RecordID, FIELD_IDENTIFIERS, void **FieldVa
     PRINT_FIELD_IDENTIFIERS;
     printer("\n\n");
     if(RaiseCallback != NULL)
-        RaiseCallback();
+        RaiseCallback(__FUNCTION__);
     return NULL;
     }
 //////////////////////////////////////////////////////////////////////

@@ -556,13 +556,13 @@ UINT32 TES4File::GetNumRecords(const UINT32 &RecordType)
     return 0;
     }
 
-Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options)
+Record * TES4File::CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreationFlags &options)
     {
-    if(Flags.IsNoLoad)
-        {
-        printer("TES4File::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
-        return NULL;
-        }
+    //if(Flags.IsNoLoad)
+    //    {
+    //    printer("TES4File::CreateRecord: Error - Unable to create any records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
+    //    return NULL;
+    //    }
 
     Record *newRecord = NULL;
 
@@ -1424,11 +1424,11 @@ SINT32 TES4File::Save(STRING const &SaveName, std::vector<FormIDResolver *> &Exp
 
 void TES4File::VisitAllRecords(RecordOp &op)
     {
-    if(Flags.IsNoLoad)
-        {
-        printer("TES4File::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
-        return;
-        }
+    //if(Flags.IsNoLoad)
+    //    {
+    //    printer("TES4File::VisitAllRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
+    //    return;
+    //    }
 
     //This visits every record and subrecord
     {
@@ -1507,11 +1507,11 @@ void TES4File::VisitAllRecords(RecordOp &op)
 
 void TES4File::VisitRecords(const UINT32 &RecordType, RecordOp &op)
     {
-    if(Flags.IsNoLoad)
-        {
-        printer("TES4File::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
-        return;
-        }
+    //if(Flags.IsNoLoad)
+    //    {
+    //    printer("TES4File::VisitRecords: Error - Unable to visit records in mod \"%s\". The mod is flagged not to be loaded.\n", ModName);
+    //    return;
+    //    }
 
     switch(RecordType)
         {

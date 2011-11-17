@@ -42,6 +42,7 @@ ModFile::ModFile(Collection *_Parent, STRING filename, STRING modname, const UIN
     ModTime = mtime();
     if(Flags.IsNoLoad || Flags.IsCreateNew || !exists())
         {
+        Flags.IsNoLoad = Flags.IsNoLoad || !exists();
         TES4.IsLoaded(true);
         STRING const _Name = ModName;
         TES4.IsESM(icmps(".esm",_Name + strlen(_Name) - 4) == 0);
@@ -105,7 +106,7 @@ bool ModFile::Open()
         }
     catch(std::ios::failure const &ex)
         {
-        printer("ModFile: Error - Unable to open \"%s\" as read only via memory mapping.\n", FileName);
+        printer("ModFile: Error - Unable to open \"%s\" as read only via memory mapping. The file is probably open in another application such as TES4Edit.\n", FileName);
         throw ex;
         }
     catch(std::exception &ex)
@@ -188,11 +189,11 @@ bool FormIDMasterUpdater::Accept(UINT32 &curFormID)
         }
 
     UINT32 modIndex = curFormID >> 24;
+    //result = result || modIndex == 0xFF;
     //printer("Checking %08X against %02X, %02X, %02X\n", curFormID, ExpandedIndex, CollapseTable[modIndex], CollapsedIndex);
     //If the formID belongs to the mod, or if the master is already present, do nothing
     if((modIndex == ExpandedIndex) || (CollapseTable[modIndex] != CollapsedIndex))
         return stop;
-
     //If the modIndex doesn't match to a loaded mod, it gets assigned to the mod that it is in.
     if(modIndex >= FormIDHandler.LoadOrder255.size())
         {
@@ -211,6 +212,7 @@ bool FormIDMasterUpdater::AcceptMGEF(UINT32 &curMgefCode)
         return stop;
 
     UINT32 modIndex = curMgefCode & 0x000000FF;
+    //result = result || modIndex == 0xFF;
     //If the MgefCode belongs to the mod, or if the master is already present, do nothing
     if((modIndex == ExpandedIndex) || (CollapseTable[modIndex] != CollapsedIndex))
         return stop;

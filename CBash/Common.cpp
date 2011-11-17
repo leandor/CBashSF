@@ -26,7 +26,7 @@ GPL License and Copyright Notice ============================================
 
 int (*printer)(const char * _Format, ...) = &printf;
 SINT32 (*LoggingCallback)(const STRING) = NULL;
-void (*RaiseCallback)() = NULL;
+void (*RaiseCallback)(const STRING) = NULL;
 
 #ifdef CBASH_DEBUG_VARS
     std::map<unsigned long, unsigned long> uint32_uint32_map1;
@@ -711,7 +711,7 @@ bool FormIDHandlerClass::IsValid(const unsigned char *_SrcBuf)
     return (_SrcBuf >= FileStart && _SrcBuf <= FileEnd);
     }
 
-CreateRecordOptions::CreateRecordOptions():
+CreationFlags::CreationFlags():
     SetAsOverride(false),
     CopyWinningParent(false),
     ExistingReturned(false)
@@ -719,7 +719,7 @@ CreateRecordOptions::CreateRecordOptions():
     //
     }
 
-CreateRecordOptions::CreateRecordOptions(UINT32 nFlags):
+CreationFlags::CreationFlags(UINT32 nFlags):
     SetAsOverride((nFlags & fSetAsOverride) != 0),
     CopyWinningParent((nFlags & fCopyWinningParent) != 0),
     ExistingReturned(false)
@@ -727,12 +727,12 @@ CreateRecordOptions::CreateRecordOptions(UINT32 nFlags):
     //
     }
 
-CreateRecordOptions::~CreateRecordOptions()
+CreationFlags::~CreationFlags()
     {
     //
     }
 
-UINT32 CreateRecordOptions::GetFlags()
+UINT32 CreationFlags::GetFlags()
     {
     UINT32 flags = 0;
     if(SetAsOverride)
@@ -756,7 +756,7 @@ ModFlags::ModFlags():
     IsIndexLANDs(false),
     IsFixupPlaceables(false),
     IsCreateNew(false),
-    IsIgnoreAbsentMasters(false),
+    IsIgnoreInactiveMasters(false),
     LoadedGRUPs(false)
     {
     //
@@ -770,14 +770,14 @@ ModFlags::ModFlags(UINT32 _Flags):
     IsSkipAllRecords((_Flags & fIsSkipAllRecords) != 0),
     IsInLoadOrder((_Flags & fIsInLoadOrder) != 0),
     IsSaveable(((_Flags & fIsInLoadOrder) != 0) ? ((_Flags & fIsSaveable) != 0) : false),
-    IsAddMasters(((_Flags & fIsIgnoreAbsentMasters) != 0) ? false : ((_Flags & fIsAddMasters) != 0)),
+    IsAddMasters(((_Flags & fIsIgnoreInactiveMasters) != 0) ? false : ((_Flags & fIsAddMasters) != 0)),
     IsLoadMasters((_Flags & fIsLoadMasters) != 0),
     IsExtendedConflicts((_Flags & fIsExtendedConflicts) != 0),
     IsTrackNewTypes((_Flags & fIsTrackNewTypes) != 0),
     IsIndexLANDs((_Flags & fIsIndexLANDs) != 0),
     IsFixupPlaceables((_Flags & fIsFixupPlaceables) != 0),
     IsCreateNew((_Flags & fIsCreateNew) != 0),
-    IsIgnoreAbsentMasters((_Flags & fIsIgnoreAbsentMasters) != 0),
+    IsIgnoreInactiveMasters((_Flags & fIsIgnoreInactiveMasters) != 0),
     LoadedGRUPs(false)
     {
     //
@@ -825,10 +825,10 @@ UINT32 ModFlags::GetFlags()
         flags |= fIsFixupPlaceables;
     if(IsCreateNew)
         flags |= fIsCreateNew;
-    if(IsIgnoreAbsentMasters)
+    if(IsIgnoreInactiveMasters)
         {
         flags &= ~fIsAddMasters;
-        flags |= fIsIgnoreAbsentMasters;
+        flags |= fIsIgnoreInactiveMasters;
         }
     return flags;
     }

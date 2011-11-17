@@ -149,7 +149,7 @@ class TES4File : public ModFile
         SINT32   LoadTES4();
         SINT32   Load(RecordOp &read_parser, RecordOp &indexer, std::vector<FormIDResolver *> &Expanders, std::vector<Record *> &DeletedRecords);
         UINT32   GetNumRecords(const UINT32 &RecordType);
-        Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreateRecordOptions &options);
+        Record * CreateRecord(const UINT32 &RecordType, STRING const &RecordEditorID, Record *&SourceRecord, Record *&ParentRecord, CreationFlags &options);
         SINT32   DeleteRecord(Record *&curRecord, RecordOp &deindexer);
         SINT32   Save(STRING const &SaveName, std::vector<FormIDResolver *> &Expanders, bool CloseMod, RecordOp &indexer);
 
