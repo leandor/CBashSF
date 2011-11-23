@@ -10562,28 +10562,19 @@ from timeit import Timer
 ##maxi = max(test)
 ##print "Min:%.15f, Avg:%.15f, Max:%.15f" % (mini, avgi, maxi)
 
-##phonenumber = raw_input(">")
-##Current = ObCollection()
-####Current.addMod("Oblivion.esm")
-####print "MinLoad"
-##Current.addMod("Oblivion.esm", MinLoad=False)
-##print "FullLoad"
-##Current.load()
-##phonenumber = raw_input(">")
-##Current.Close()
-##del Current
-##phonenumber = raw_input("!")
+phonenumber = raw_input(">")
+Current = ObCollection()
+##Current.addMod("Oblivion.esm")
+##print "MinLoad"
+Current.addMod("Oblivion.esm", MinLoad=False)
+print "FullLoad"
+Current.load()
+phonenumber = raw_input(">")
+Current.Close()
+del Current
+phonenumber = raw_input("!")
 
 ##regressionTests()
-def quicktest():
-    with ObCollection() as Current:
-        modFile = Current.addMod("Oblivion.esm", Flags=0x202)
-##        Current.addMod("Oblivifall Master File.esm")
-        Current.load()
-        for group, records in modFile.aggregates.iteritems():
-            print len(records)
-
-quicktest()
 
 ##TestIdenticalToMaster()
 ##TestUndelete()
